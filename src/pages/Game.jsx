@@ -10,8 +10,9 @@ import readGameProfile,{saveGameProfile} from '@/game/gameProfile';
 export default function Game() {
  const [profile,setProfile]=useState(readGameProfile),[screen,setScreen]=useState(()=>profile.username?'menu':'username'),game=useSoloGame();
  useEffect(()=>{document.title='Void Wars | Bed Wars';},[]);
- const save=next=>{setProfile(saveGameProfile(next));setScreen('menu');};
+ const back=()=>setScreen(game.engine.current?'game':'menu');
+ const save=next=>{const saved=saveGameProfile(next);setProfile(saved);game.updateSettings(saved);back();};
  const start=options=>{setScreen('game');game.start({...options,...profile});};
  const quit=()=>{game.quit();setScreen('menu');};
- return <main className="game-shell"><div className="game-canvas" ref={game.mount}/>{screen==='username'?<GameUsernameForm profile={profile} onSave={save}/>:screen==='settings'?<GameSettings profile={profile} onSave={save} onBack={()=>setScreen('menu')}/>:screen==='solo'?<GameSoloSetup onPlay={start} onBack={()=>setScreen('menu')}/>:screen==='game'?<GameSession game={game} onQuit={quit}/>:<GameMenu username={profile.username} onSolo={()=>setScreen('solo')} onSettings={()=>setScreen('settings')}/>}</main>;
+ return <main className="game-shell"><div className="game-canvas" ref={game.mount}/><div className="game-interface" style={{'--game-gui-scale':profile.guiScale/100}}>{screen==='username'?<GameUsernameForm profile={profile} onSave={save}/>:screen==='settings'?<GameSettings profile={profile} onSave={save} onBack={back}/>:screen==='solo'?<GameSoloSetup onPlay={start} onBack={()=>setScreen('menu')}/>:screen==='game'?<GameSession game={game} onQuit={quit} onSettings={()=>setScreen('settings')}/>:<GameMenu username={profile.username} onSolo={()=>setScreen('solo')} onSettings={()=>setScreen('settings')}/>}</div></main>;
 }

@@ -5,7 +5,7 @@ import { isSword,TEAM_NAMES } from '@/game/equipment';
 export default class TeamUpgrades {
  constructor(match){this.match=match;this.teams=Array.from({length:match.beds.length},()=>({sharpness:0,protection:0,haste:0,forge:0,heal:0,traps:new Uint8Array(3),trapCount:0,cooldown:0}));this.trapSystem=new TeamTraps(match,this.teams);}
  offers(playerIndex=0){return teamOffers(this.teams[this.match.players[playerIndex].team]);}
- purchase(playerIndex,key){const player=this.match.players[playerIndex];if(!player?.alive||this.match.phase!=='active')return {ok:false,message:'You cannot buy upgrades while spectating.'};const state=this.teams[player.team],upgradeIndex=TEAM_UPGRADES.findIndex(def=>def.key===key),trapIndex=TRAPS.findIndex(def=>def.key===key);let cost,level=0,index=upgradeIndex;
+ purchase(playerIndex,key,npcTeam=this.match.players[playerIndex]?.team){const player=this.match.players[playerIndex];if(!player?.alive||this.match.phase!=='active')return {ok:false,message:'You cannot buy upgrades while spectating.'};if(!this.match.interaction.upgradesNPCs?.inReach(player.body,npcTeam))return {ok:false,message:'Move closer to the Team Upgrades villager.'};const state=this.teams[player.team],upgradeIndex=TEAM_UPGRADES.findIndex(def=>def.key===key),trapIndex=TRAPS.findIndex(def=>def.key===key);let cost,level=0,index=upgradeIndex;
   if(upgradeIndex>=0){const def=TEAM_UPGRADES[upgradeIndex];if(state[key]>=def.costs.length)return {ok:false,message:'Your team already owns the maximum tier!'};level=state[key]+1;cost=def.costs[level-1];}
   else if(trapIndex>=0){if(state.trapCount>=3)return {ok:false,message:'Trap queue is full (3/3)!'};cost=TRAP_COSTS[state.trapCount];index=TEAM_UPGRADES.length+trapIndex;}
   else return {ok:false,message:'Upgrade unavailable.'};
