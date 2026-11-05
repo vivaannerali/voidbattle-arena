@@ -1,0 +1,4 @@
+import * as THREE from 'three';
+import { CORNERS,TRI,SHADE } from '@/game/blocks';
+
+export function resourceGeometry(id){const positions=[],colors=[],uv=[],tile=44+id-40,ingot=id<42;for(let f=0;f<6;f++)for(let v=0;v<6;v++){const n=TRI[v],co=CORNERS[f];positions.push((co[n*3]-.5)*(ingot?1:.75),(co[n*3+1]-.5)*(ingot?.3:1),(co[n*3+2]-.5)*.5);colors.push(SHADE[f],SHADE[f],SHADE[f]);uv.push((tile%8+(n===1||n===2?.998:.002))/8,1-(Math.floor(tile/8)+(n<2?.998:.002))/8);}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;}

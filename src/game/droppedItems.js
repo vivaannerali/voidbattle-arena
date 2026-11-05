@@ -1,0 +1,13 @@
+import * as THREE from 'three';
+import { resourceGeometry } from '@/game/resourceModels';
+const CAPACITY=1024;
+
+export default class DroppedItems {
+ constructor(scene,material){this.counts=new Uint16Array(CAPACITY);this.ids=new Uint8Array(CAPACITY);this.x=new Float32Array(CAPACITY);this.y=new Float32Array(CAPACITY);this.z=new Float32Array(CAPACITY);this.owner=new Int16Array(CAPACITY);this.owner.fill(-1);this.meshes=new Array(4);this.matrixObject=new THREE.Object3D();this.renderCounts=new Uint16Array(4);for(let i=0;i<4;i++){const m=new THREE.InstancedMesh(resourceGeometry(40+i),material,CAPACITY);m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);m.frustumCulled=false;m.count=0;this.meshes[i]=m;scene.add(m);}}
+ spawn(id,amount,x,y,z,owner=-1){for(let i=0;i<CAPACITY&&amount>0;i++){if(!this.counts[i]||this.ids[i]!==id||this.owner[i]!==owner||Math.abs(this.x[i]-x)+Math.abs(this.z[i]-z)>.8)continue;const n=Math.min(amount,64-this.counts[i]);this.counts[i]+=n;amount-=n;}for(let i=0;i<CAPACITY&&amount>0;i++){if(this.counts[i])continue;const n=Math.min(64,amount);this.ids[i]=id;this.counts[i]=n;this.x[i]=x;this.y[i]=y;this.z[i]=z;this.owner[i]=owner;amount-=n;}return amount;}
+ atGenerator(generator){let count=0;for(let i=0;i<CAPACITY;i++)if(this.counts[i]&&this.owner[i]===generator)count+=this.counts[i];return count;}
+ pickup(players){for(let i=0;i<CAPACITY;i++){if(!this.counts[i])continue;for(let t=0;t<players.length;t++){const s=players[t];if(!s.alive)continue;const p=s.body,dx=p.x-this.x[i],dz=p.z-this.z[i];if(dx*dx+dz*dz>1.05*1.05||Math.abs(p.y-this.y[i])>1.35)continue;const remaining=s.inventory.add(this.ids[i],this.counts[i]);this.counts[i]=remaining;if(!remaining)break;}}}
+ transfer(victim,killer){const inv=victim.inventory,p=victim.body;for(let i=0;i<36;i++){const id=inv.ids[i],count=inv.counts[i];if(id<40||id>43||!count)continue;let remaining=killer?.alive?killer.inventory.add(id,count):count;if(remaining&&p.y>0)remaining=this.spawn(id,remaining,p.x,Math.max(17.14,p.y+.12),p.z);inv.counts[i]=remaining&&p.y>0?remaining:0;if(!inv.counts[i])inv.ids[i]=0;inv.revision++;}}
+ render(time){this.renderCounts.fill(0);const o=this.matrixObject;for(let i=0;i<CAPACITY;i++){if(!this.counts[i])continue;const k=this.ids[i]-40,index=this.renderCounts[k]++;o.position.set(this.x[i],this.y[i]+Math.sin(time*3+i)*.055,this.z[i]);o.rotation.set(0,time*1.9+i*.7,0);o.scale.setScalar(.24);o.updateMatrix();this.meshes[k].setMatrixAt(index,o.matrix);}for(let k=0;k<4;k++){this.meshes[k].count=this.renderCounts[k];this.meshes[k].instanceMatrix.needsUpdate=true;}}
+ dispose(scene){for(const mesh of this.meshes){scene.remove(mesh);mesh.geometry.dispose();mesh.dispose();}}
+}
