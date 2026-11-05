@@ -1,0 +1,4 @@
+import React from 'react';
+import ShopItemIcon from '@/components/game/ShopItemIcon';
+
+export default function ShopOfferSlot({offer,atlas,onBuy,onHover,onLeave}) {return <button className={'inventory-slot shop-offer '+(offer.owned?'shop-offer-owned':'')} aria-label={offer.name+' for '+offer.cost} aria-disabled={offer.owned} onClick={e=>onBuy(offer.key,e.shiftKey)} onMouseEnter={e=>onHover(offer,e.clientX,e.clientY)} onMouseMove={e=>onHover(offer,e.clientX,e.clientY)} onMouseLeave={onLeave} onFocus={e=>{const rect=e.currentTarget.getBoundingClientRect();onHover(offer,rect.right,rect.top);}} onBlur={onLeave}><ShopItemIcon id={offer.id} atlas={atlas}/>{offer.quantity>1&&<b>{offer.quantity}</b>}{offer.owned&&<span className="shop-owned-mark">✓</span>}</button>;}

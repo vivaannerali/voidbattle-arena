@@ -1,0 +1,4 @@
+import React, { useState } from 'react';
+import InventorySlot from '@/components/game/InventorySlot';
+
+export default function ShopPlayerInventory({data,onMove}) {const [selected,setSelected]=useState(-1);const move=(from,to)=>{onMove(from,to);setSelected(-1);};const select=index=>{if(selected>=0&&selected!==index)move(selected,index);else setSelected(data.inventoryAll[index]?index:-1);};const slot=index=><InventorySlot key={index} index={index} id={data.itemsAll[index]} count={data.inventoryAll[index]} atlas={data.atlas} selected={selected===index} onSelect={select} onMove={move} hotbar={index<9}/>;return <div className="shop-player-inventory"><h3>Inventory</h3><div className="inventory-grid">{Array.from({length:27},(_,i)=>slot(i+9))}</div><div className="inventory-grid shop-hotbar">{Array.from({length:9},(_,i)=>slot(i))}</div></div>;}

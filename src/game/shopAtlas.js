@@ -1,0 +1,10 @@
+export function drawShopTiles(c){const origin=tile=>({x:tile%8*16,y:Math.floor(tile/8)*16}),rect=(p,x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(p.x+x,p.y+y,w,h);};
+ for(let i=0;i<4;i++){const p=origin(64+i),color=['#e56970','#78a4ed','#8fd17c','#f0d26b'][i];c.clearRect(p.x,p.y,16,16);c.strokeStyle=color;c.lineWidth=1;c.strokeRect(p.x+.5,p.y+.5,15,15);for(let n=2;n<12;n++)rect(p,n,14-n,1,1,color);}
+ const ladder=origin(68);for(const x of [3,11])rect(ladder,x,0,2,16,'#b58a4e');for(let y=2;y<16;y+=4){rect(ladder,4,y,8,2,'#d0a565');rect(ladder,4,y+2,8,1,'#6e4f2d');}
+ const stick=origin(69);for(let n=0;n<12;n++){rect(stick,2+n,13-n,2,2,'#9e723d');rect(stick,3+n,13-n,1,1,'#c2975b');}
+ const colors=['#b18a55','#d9e2e7','#edc44b','#62dcd6'];for(let i=0;i<4;i++){const p=origin(70+i);for(let n=0;n<10;n++)rect(p,3+n,13-n,2,2,'#896039');rect(p,3,2,11,3,colors[i]);rect(p,12,4,2,4,colors[i]);rect(p,3,4,2,2,colors[i]);}
+ for(let i=0;i<4;i++){const p=origin(74+i);for(let n=0;n<10;n++)rect(p,3+n,13-n,2,2,'#896039');const color=['#b18a55','#969ea5','#d9e2e7','#62dcd6'][i];rect(p,8,1,6,3,color);rect(p,9,4,6,4,color);rect(p,12,7,3,2,color);}
+ const shears=origin(78);for(let n=0;n<8;n++){rect(shears,3+n,2+n,2,2,'#e3e7ed');rect(shears,11-n,2+n,2,2,'#aab4c2');}rect(shears,2,10,4,4,'#64514a');rect(shears,9,10,4,4,'#64514a');rect(shears,3,11,2,2,'#bbb');rect(shears,10,11,2,2,'#bbb');
+ for(let i=0;i<3;i++){const p=origin(79+i),color=['#a1a8b0','#dce5e9','#6ee5df'][i];rect(p,2,2,4,5,color);rect(p,10,2,4,5,color);rect(p,5,4,6,10,color);rect(p,4,7,8,6,color);rect(p,6,4,4,2,'#657783');if(i===0)for(let y=6;y<13;y+=2)for(let x=4;x<12;x+=2)rect(p,x,y,1,1,'#4e5661');else rect(p,5,7,2,5,i===1?'#f9ffff':'#b9fff9');}
+ const star=origin(82);rect(star,7,1,2,13,'#ffe175');rect(star,2,5,12,3,'#ffe175');rect(star,4,8,8,3,'#e5ae40');rect(star,3,12,3,2,'#ffe175');rect(star,10,12,3,2,'#ffe175');
+}
