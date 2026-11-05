@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { B, DIRS, CORNERS, TRI, SHADE, tileFor, blockHeight, isGlass, isLadder, blockX, blockZ } from '@/game/blocks';
+import { DIRS, CORNERS, TRI, SHADE, tileFor, blockHeight, isGlass, isLadder, blockX, blockZ } from '@/game/blocks';
 
 // One draw-call per 16³ chunk. Dense typed voxel data, numeric chunk keys.
 // Edits patch only affected faces in-place, including a boundary face in its
