@@ -11,6 +11,6 @@ export default class BotEconomy {
  }
  affordable(bot,key){if(!key)return false;const entry=SHOP_ITEMS.find(item=>item.key===key),offer=resolveOffer(entry,bot.player);return !offer.owned&&bot.player.inventory.total(offer.currency)>=offer.cost;}
  ready(bot){const p=bot.player;return p.inventory.total(TEAMS[p.team].wool)>=48&&p.sword>=33&&p.gear.pickaxeTier>=0;}
- buy(bot){const key=this.purchaseKey(bot);if(!this.affordable(bot,key))return false;return this.shop.purchase(key,key==='wool',bot.index).ok;}
+ buy(bot){if(!this.match.interaction.shops.inReach(bot.player.body,bot.player.team))return false;const key=this.purchaseKey(bot);if(!this.affordable(bot,key))return false;return this.shop.purchase(key,key==='wool',bot.index).ok;}
  upgradeKey(bot){const state=this.match.teamUpgrades.teams[bot.player.team],diamonds=bot.player.inventory.total(42);if(state.forge===0&&diamonds>=4)return 'forge';if(state.protection<4&&diamonds>=TEAM_UPGRADES[1].costs[state.protection])return 'protection';if(!state.sharpness&&diamonds>=8)return 'sharpness';if(state.haste<2&&diamonds>=TEAM_UPGRADES[2].costs[state.haste])return 'haste';if(!state.heal&&diamonds>=3)return 'heal';if(!state.trapCount&&diamonds>=TRAP_COSTS[0])return 'fatigue_trap';if(state.forge<4&&diamonds>=TEAM_UPGRADES[3].costs[state.forge])return 'forge';return null;}
 }
