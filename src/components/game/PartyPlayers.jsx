@@ -1,0 +1,4 @@
+import React from 'react';
+import { Crown,Check,Signal } from 'lucide-react';
+import { TEAM_CSS } from '@/game/equipment';
+export default function PartyPlayers({state,selfId,onAction}){const host=state.players.find(p=>p.id===selfId)?.host;return <section className="party-panel"><h2>PLAYERS <small>{state.players.length} / 8</small></h2><ul className="party-players">{state.players.map(p=><li key={p.id}><span className={'party-player-name text-team-'+TEAM_CSS[p.team]}>{p.username}{p.host&&<Crown size={17} aria-label="Host"/>}{p.id===selfId&&<small>YOU</small>}</span><span className={p.ready?'party-ready-state':'party-not-ready'}>{p.ready?<><Check size={16}/> Ready</>:'Not ready'}</span><span className="party-ping"><Signal size={14}/>{p.ping===null?'…':p.ping+' ms'}</span>{host&&!p.host&&<button className="party-kick" disabled={state.phase!=='lobby'} onClick={()=>onAction({type:'kick',id:p.id})} aria-label={'Kick '+p.username}>Kick</button>}</li>)}</ul></section>;}
