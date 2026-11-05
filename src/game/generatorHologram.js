@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLYPH_CHARS,glyphPosition } from '@/game/pixelGlyphs';
-const TRI=[0,1,2,0,2,3],UV=[[0,1],[1,1],[1,0],[0,0]];
+const TRI=[0,2,1,0,3,2],UV=[[0,1],[1,1],[1,0],[0,0]];
 
 export default class GeneratorHologram {
  constructor(scene,texture,x,y,z){this.geometry=new THREE.BufferGeometry();this.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(96*18),3));this.geometry.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(96*12),2));this.geometry.setAttribute('color',new THREE.BufferAttribute(new Float32Array(96*18),3));this.material=new THREE.MeshBasicMaterial({map:texture,vertexColors:true,transparent:true,alphaTest:.25,depthWrite:false});this.mesh=new THREE.Mesh(this.geometry,this.material);this.mesh.frustumCulled=false;this.mesh.position.set(x,y,z);scene.add(this.mesh);this.lastKey='';this.glyphs=0;this.tint=new THREE.Color();}

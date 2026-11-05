@@ -1,4 +1,5 @@
 import { TEAMS } from '@/game/map';
+import { bed } from '@/game/blocks';
 export const GAME_EVENTS=[{name:'Diamond II',at:360},{name:'Emerald II',at:720},{name:'Diamond III',at:1080},{name:'Emerald III',at:1440},{name:'Bed Gone',at:1800},{name:'Sudden Death',at:2400},{name:'Game End',at:3000}];
 export function timerText(seconds){const n=Math.max(0,seconds);return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');}
 
@@ -7,7 +8,7 @@ export default class GameEvents {
  tick(){this.elapsed++;if(this.index<GAME_EVENTS.length&&this.elapsed>=GAME_EVENTS[this.index].at*60){const index=this.index++;this.match.emit(7,index);if(index===0)this.generators.upgrade(42,2);else if(index===1)this.generators.upgrade(43,2);else if(index===2)this.generators.upgrade(42,3);else if(index===3)this.generators.upgrade(43,3);else if(index===4)this.destroyBeds();else if(index===5)this.suddenDeath=true;else if(index===6)this.endGame();}
   if(this.suddenDeath&&this.match.phase==='active'){this.border=Math.max(6,96-90*(this.elapsed-2400*60)/(600*60));if(this.elapsed%60===0)for(let i=0;i<4;i++){const p=this.match.players[i];if(p.alive&&Math.hypot(p.body.x,p.body.z)>this.border){p.health=Math.max(0,p.health-2);p.hitFlash=10;p.hitAge=0;if(p.health<=0)this.match.die(i,p.attackAge<600?p.lastAttacker:-1);}}}
  }
- destroyBeds(){for(let i=0;i<4;i++){const t=TEAMS[i],sin=Math.round(Math.sin(t.rotation)),cos=Math.round(Math.cos(t.rotation));for(let n=4;n<=5;n++)this.match.world.set(t.x+n*sin,17,t.z+n*cos,0);this.match.destroyBed(i,-1);}}
- endGame(){if(this.match.phase==='finished')return;let winner=-2,best=-Infinity,tied=false;for(let i=0;i<4;i++){const p=this.match.players[i];if(p.final)continue;const score=p.finalKills*10000+p.kills*100+p.health;if(score>best){best=score;winner=i;tied=false;}else if(score===best)tied=true;}if(tied)winner=-2;this.match.winner=winner;this.match.phase='finished';this.match.endAt=this.match.clock+150;this.match.emit(5,winner,0,1);}
+ destroyBeds(){for(let i=0;i<4;i++){const t=TEAMS[i],sin=Math.round(Math.sin(t.rotation)),cos=Math.round(Math.cos(t.rotation));for(let n=4;n<=5;n++){const x=t.x+n*sin,z=t.z+n*cos;if(bed(this.match.world.get(x,17,z)))this.match.world.set(x,17,z,0);}this.match.destroyBed(i,-1);}}
+ endGame(){if(this.match.phase==='finished')return;let winner=-2,best=-Infinity,tied=false;for(let i=0;i<4;i++){const p=this.match.players[i];if(p.final)continue;const score=p.finalKills*10000+p.kills*100+p.health;if(score>best){best=score;winner=i;tied=false;}else if(score===best)tied=true;}if(tied)winner=-2;this.match.winner=winner;this.match.finishedByTime=true;this.match.phase='finished';this.match.endAt=this.match.clock+150;this.match.emit(5,winner,0,1);}
  snapshot(){const next=GAME_EVENTS[this.index];return {nextEvent:next?.name||'Game End',eventSeconds:next?Math.max(0,Math.ceil((next.at*60-this.elapsed)/60)):0,elapsedSeconds:Math.floor(this.elapsed/60),suddenDeath:this.suddenDeath,border:Math.round(this.border)};}
 }
