@@ -1,0 +1,8 @@
+import { useEffect,useRef,useState } from 'react';
+import PartyConnection from '@/game/party/partyConnection';
+export default function usePartySession(callbacks){const handlers=useRef(callbacks),connection=useRef(null),previous=useRef(null),[state,setState]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');handlers.current=callbacks;
+ if(!connection.current)connection.current=new PartyConnection({busy:setBusy,state:next=>{if(previous.current?.phase==='game'&&next.phase==='lobby')handlers.current.lobby();previous.current=next;setState(next);handlers.current.state?.(next);},game:options=>handlers.current.game(options,connection.current),packet:(packet,id)=>handlers.current.packet(packet,id),exit:message=>{previous.current=null;setState(null);setError(message);handlers.current.exit();}});
+ useEffect(()=>{const session=connection.current,leave=()=>session.dispose();window.addEventListener('beforeunload',leave);return()=>{window.removeEventListener('beforeunload',leave);session.dispose();};},[]);
+ const open=(username,code)=>{setError('');connection.current.open(username,code);};const leave=()=>{connection.current.dispose();previous.current=null;setState(null);setBusy(false);handlers.current.exit();};
+ return {state,busy,error,setError,selfId:connection.current.id,create:username=>open(username),join:(username,code)=>open(username,code),action:action=>connection.current.action(action),leave};
+}

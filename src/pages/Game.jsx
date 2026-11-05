@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import GameMenu from '@/components/game/GameMenu';
-import GameUsernameForm from '@/components/game/GameUsernameForm';
+import React,{useEffect,useMemo,useState} from 'react';
 import GameSettings from '@/components/game/GameSettings';
-import GameSoloSetup from '@/components/game/GameSoloSetup';
 import GameSession from '@/components/game/GameSession';
+import PartyStart from '@/components/game/PartyStart';
+import PartyLobby from '@/components/game/PartyLobby';
 import useSoloGame from '@/components/game/useSoloGame';
-import readGameProfile,{saveGameProfile} from '@/game/gameProfile';
+import usePartySession from '@/components/game/usePartySession';
+import readGameProfile,{saveGameProfile,validUsername} from '@/game/gameProfile';
+import HostPartyGame from '@/game/party/hostPartyGame';
+import GuestPartyGame from '@/game/party/guestPartyGame';
+import partyTextures from '@/game/party/partyTextures';
+import '@/components/game/party.css';
 
-export default function Game() {
- const [profile,setProfile]=useState(readGameProfile),[screen,setScreen]=useState(()=>profile.username?'menu':'username'),game=useSoloGame();
- useEffect(()=>{document.title='Void Wars | Bed Wars';},[]);
- const back=()=>setScreen(game.engine.current?'game':'menu');
- const save=next=>{const saved=saveGameProfile(next);setProfile(saved);game.updateSettings(saved);back();};
- const start=options=>{setScreen('game');game.start({...options,...profile});};
- const quit=()=>{game.quit();setScreen('menu');};
- return <main className="game-shell"><div className="game-canvas" ref={game.mount}/><div className="game-interface" style={{'--game-gui-scale':profile.guiScale/100}}>{screen==='username'?<GameUsernameForm profile={profile} onSave={save}/>:screen==='settings'?<GameSettings profile={profile} onSave={save} onBack={back}/>:screen==='solo'?<GameSoloSetup onPlay={start} onBack={()=>setScreen('menu')}/>:screen==='game'?<GameSession game={game} onQuit={quit} onSettings={()=>setScreen('settings')}/>:<GameMenu username={profile.username} onSolo={()=>setScreen('solo')} onSettings={()=>setScreen('settings')}/>}</div></main>;
+export default function Game(){
+ const [profile,setProfile]=useState(readGameProfile),[name,setName]=useState(profile.username),[code,setCode]=useState(''),[screen,setScreen]=useState('start'),game=useSoloGame(),textures=useMemo(partyTextures,[]);
+ const party=usePartySession({state:state=>{setCode(state.code);if(state.phase==='lobby'||state.phase==='countdown')setScreen(current=>current==='settings'?current:'lobby');},game:(options,connection)=>{setScreen('game');game.start({...profile,...options,attachNetwork:engine=>options.networkRole==='host'?new HostPartyGame(engine,connection):new GuestPartyGame(engine,connection)});},packet:(packet,id)=>game.engine.current?.network?.receive(packet,id),lobby:()=>{game.quit();setScreen('lobby');},exit:()=>{game.quit();setScreen('start');}});
+ useEffect(()=>{document.title='Void Wars | Party Bed Wars';},[]);
+ const changeName=value=>{setName(value);if(validUsername(value)){try{setProfile(saveGameProfile({...profile,username:value}));}catch(error){party.setError(error.message);}}};
+ const back=()=>setScreen(game.engine.current?'game':party.state?'lobby':'start');
+ const save=next=>{const saved=saveGameProfile(next,{allowBlank:true});setProfile(saved);game.updateSettings(saved);back();};
+ return <main className="game-shell party-shell" style={textures}><div className="game-canvas" ref={game.mount}/><div className="game-interface" style={{'--game-gui-scale':profile.guiScale/100}}>{screen==='settings'?<GameSettings profile={profile} onSave={save} onBack={back} hideUsername/>:screen==='game'?<GameSession game={game} onQuit={party.leave} onSettings={()=>setScreen('settings')} onLobby={()=>party.action({type:'back'})}/>:<div className="party-surface">{screen==='lobby'&&party.state?<PartyLobby state={party.state} selfId={party.selfId} onAction={party.action} onLeave={party.leave} onSettings={()=>setScreen('settings')}/>:<PartyStart username={name} onName={changeName} code={code} onCode={setCode} onCreate={()=>party.create(name)} onJoin={()=>party.join(name,code)} onSettings={()=>setScreen('settings')} busy={party.busy} error={party.error}/>}</div>}</div></main>;
 }

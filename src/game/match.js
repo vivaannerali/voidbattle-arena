@@ -20,7 +20,7 @@ export default class Match {
  emit(type,a=0,b=0,c=0){const i=(this.eventWrite++%64)*4;this.events[i]=type;this.events[i+1]=a;this.events[i+2]=b;this.events[i+3]=c;if(this.eventWrite-this.eventRead>64)this.eventRead=this.eventWrite-64;}
  allied(a,b){return alliedTeams(this,a,b);}
  checkVictory(){checkPartyVictory(this);}
- begin(){if(this.phase==='waiting'){this.phase='countdown';this.countdown=300;}}
+ begin(){if(this.settings.partyRoster)return;if(this.phase==='waiting'){this.phase='countdown';this.countdown=300;}}
  canPlay(){return this.phase==='active'&&this.players[0].alive;}
  setArmour(index){this.players[0].armour=ARMOUR[index]?.points??7;this.players[0].gear.armourTier=ARMOUR[index]?index:1;}
  spectatorTick(){const p=this.players[0].body,input=this.input;p.px=p.x;p.py=p.y;p.pz=p.z;let f=(input.down('KeyW')?1:0)-(input.down('KeyS')?1:0),s=(input.down('KeyD')?1:0)-(input.down('KeyA')?1:0);const l=Math.hypot(f,s);if(l>1){f/=l;s/=l;}p.x+=(Math.cos(p.yaw)*s-Math.sin(p.yaw)*f)/6;p.z+=(-Math.sin(p.yaw)*s-Math.cos(p.yaw)*f)/6;p.y=Math.max(-5,Math.min(65,p.y+((input.down('Space')?1:0)-(input.down('ShiftLeft')||input.down('ShiftRight')?1:0))/6));}
