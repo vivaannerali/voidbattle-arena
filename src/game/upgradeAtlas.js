@@ -1,0 +1,9 @@
+export default function drawUpgradeTiles(c){const origin=tile=>({x:tile%8*16,y:Math.floor(tile/8)*16}),rect=(p,x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(p.x+x,p.y+y,w,h);},copy=(source,target)=>{const a=origin(source),b=origin(target);c.drawImage(c.canvas,a.x,a.y,16,16,b.x,b.y,16,16);return b;};
+ const sword=copy(29,83);rect(sword,10,1,1,7,'#d7b8ff');rect(sword,8,4,5,1,'#b89eff');const armor=copy(81,84);rect(armor,2,3,12,1,'#b596ff');rect(armor,8,6,1,8,'#d7c7ff');const pick=copy(71,85);rect(pick,0,8,5,1,'#ffe27a');rect(pick,0,11,3,1,'#ffe27a');
+ const forge=origin(86);rect(forge,1,1,14,14,'#525964');rect(forge,2,2,12,11,'#9399a1');rect(forge,4,4,8,3,'#29333f');rect(forge,4,9,8,5,'#30202b');rect(forge,5,10,6,3,'#f19b45');rect(forge,7,9,2,3,'#ffe184');
+ const heal=origin(87);rect(heal,1,12,14,3,'#716f6b');rect(heal,4,2,8,11,'#6dddc9');rect(heal,6,1,4,4,'#c6fff1');rect(heal,7,4,2,7,'#fff');rect(heal,4,7,8,2,'#fff');
+ const blind=origin(88);rect(blind,1,5,14,6,'#a69cbd');rect(blind,3,3,10,10,'#a69cbd');rect(blind,5,4,6,8,'#3a274e');rect(blind,7,5,2,5,'#e1c4ff');rect(blind,3,13,10,1,'#65517d');
+ const counter=origin(89);for(let n=0;n<12;n++){rect(counter,2+n,13-n,2,2,'#b8ed9c');if(n<9)rect(counter,4+n,12-n,3,1,'#7cc374');}rect(counter,9,1,5,3,'#e2ffcf');
+ const alarm=origin(90);rect(alarm,7,9,2,7,'#98744b');rect(alarm,4,3,8,7,'#b74655');rect(alarm,6,1,4,11,'#ef7080');rect(alarm,7,2,2,5,'#ffdbad');rect(alarm,1,2,2,2,'#ffd279');rect(alarm,13,2,2,2,'#ffd279');
+ const fatigue=copy(70,91);rect(fatigue,1,1,2,7,'#e45f72');rect(fatigue,5,1,2,7,'#e45f72');rect(fatigue,1,7,6,2,'#e45f72');
+}

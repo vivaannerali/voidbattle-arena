@@ -1,0 +1,4 @@
+import React from 'react';
+import ShopItemIcon from '@/components/game/ShopItemIcon';
+
+export default function UpgradeTrapQueue({upgrades,atlas}) {return <section className="upgrade-queue-section" aria-label="Queued traps"><h3>Trap Queue ({upgrades.trapCount}/3) <small>First in, first triggered</small></h3><div className="upgrade-trap-queue">{Array.from({length:3},(_,i)=>{const trap=upgrades.traps[i];return <div className="upgrade-queued-trap" key={i}><div className="inventory-slot" title={trap?.name||'Empty trap slot'}>{trap&&<ShopItemIcon id={trap.id} atlas={atlas}/>}<small>{i+1}</small></div><span>{trap?.name||'Empty'}</span></div>;})}</div><p>{upgrades.cooldown>0?'Trigger cooldown: '+upgrades.cooldown+'s':'Traps armed on enemy entry.'}{upgrades.trapCount<3?' Next trap: '+upgrades.trapCost+' Diamonds.':' Queue full.'}</p></section>;}

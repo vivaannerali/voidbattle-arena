@@ -1,0 +1,6 @@
+export default class PlayerEffects {
+ constructor(){this.clear();}
+ clear(){this.blindnessTicks=0;this.slownessTicks=0;this.speedTicks=0;this.jumpTicks=0;this.fatigueTicks=0;this.invisibilityTicks=0;this.revealTicks=0;}
+ tick(player){if(this.blindnessTicks>0)this.blindnessTicks--;if(this.slownessTicks>0)this.slownessTicks--;if(this.speedTicks>0)this.speedTicks--;if(this.jumpTicks>0)this.jumpTicks--;if(this.fatigueTicks>0)this.fatigueTicks--;if(this.invisibilityTicks>0)this.invisibilityTicks--;if(this.revealTicks>0)this.revealTicks--;const p=player.body;p.speedMultiplier=(this.speedTicks>0?1.2:1)*(this.slownessTicks>0?.85:1);p.jumpMultiplier=this.jumpTicks>0?1.35:1;p.blinded=this.blindnessTicks>0;}
+ snapshot(){return {blindness:Math.ceil(this.blindnessTicks/60),slowness:Math.ceil(this.slownessTicks/60),speed:Math.ceil(this.speedTicks/60),jump:Math.ceil(this.jumpTicks/60),fatigue:Math.ceil(this.fatigueTicks/60),reveal:Math.ceil(this.revealTicks/60)};}
+}
