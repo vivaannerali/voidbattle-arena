@@ -1,4 +1,5 @@
 import { TEAMS } from '@/game/map';
+import { timeWinner } from '@/game/party/partyVictory';
 export const GAME_EVENTS=[{name:'Diamond II',at:360},{name:'Emerald II',at:720},{name:'Diamond III',at:1080},{name:'Emerald III',at:1440},{name:'Bed Gone',at:1800},{name:'Sudden Death',at:2400},{name:'Game End',at:3000}];
 export function timerText(seconds){const n=Math.max(0,seconds);return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');}
 
@@ -8,6 +9,6 @@ export default class GameEvents {
   if(this.suddenDeath&&this.match.phase==='active'){this.border=Math.max(6,96-90*(this.elapsed-2400*60)/(600*60));if(this.elapsed%60===0)for(let i=0;i<this.match.players.length;i++){const p=this.match.players[i];if(p.alive&&Math.hypot(p.body.x,p.body.z)>this.border){p.health=Math.max(0,p.health-2);p.hitFlash=10;p.hitAge=0;if(p.health<=0)this.match.die(i,p.attackAge<600?p.lastAttacker:-1);}}}
  }
  destroyBeds(){for(let i=0;i<TEAMS.length;i++)this.match.destroyBed(i,-1);}
- endGame(){if(this.match.phase==='finished')return;let winner=-2,best=-Infinity,tied=false;for(let team=0;team<TEAMS.length;team++){if(this.match.eliminated[team])continue;let score=0;for(let i=0;i<this.match.players.length;i++){const p=this.match.players[i];if(p.team===team)score+=p.finalKills*10000+p.kills*100+(p.final?0:p.health);}if(score>best){best=score;winner=team;tied=false;}else if(score===best)tied=true;}if(tied)winner=-2;this.match.winner=winner;this.match.finishedByTime=true;this.match.phase='finished';this.match.endAt=this.match.clock+150;this.match.emit(5,winner,0,1);}
+ endGame(){if(this.match.phase==='finished')return;const winner=timeWinner(this.match);this.match.winner=winner;this.match.finishedByTime=true;this.match.phase='finished';this.match.endAt=this.match.clock+150;this.match.emit(5,winner,0,1);}
  snapshot(){const next=GAME_EVENTS[this.index];return {nextEvent:next?.name||'Game End',eventSeconds:next?Math.max(0,Math.ceil((next.at*60-this.elapsed)/60)):0,elapsedSeconds:Math.floor(this.elapsed/60),suddenDeath:this.suddenDeath,border:Math.round(this.border)};}
 }

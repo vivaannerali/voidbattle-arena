@@ -8,7 +8,7 @@ export function blockGeometry(id){const p=[],uv=[],colors=[];for(let f=0;f<6;f++
 export function createScenery(scene,material){
 
  const parts=[];function part(tile,x,y,z,sx,sy,sz,rotation=0){const mesh=new THREE.Mesh(cubeGeometry(tile),material);mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.rotation.y=rotation;scene.add(mesh);parts.push(mesh);return mesh;}
- for(const team of TEAMS){const sin=Math.sin(team.rotation),cos=Math.cos(team.rotation);for(let n=0;n<2;n++){const lx=n===0?-4:4,lz=6,x=team.x+lx*cos+lz*sin+.5,z=team.z-lx*sin+lz*cos+.5;part(21,x,17.35,z,.48,.7,.38,team.rotation);part(20,x,18,z,.7,.7,.4,team.rotation);part(19,x,18.65,z,.58,.58,.58,team.rotation);part(24+n,x,19.55,z,1.5,.7,.08,team.rotation);} }
+ for(const team of TEAMS){if(team.active===false)continue;const sin=Math.sin(team.rotation),cos=Math.cos(team.rotation);for(let n=0;n<2;n++){const lx=n===0?-4:4,lz=6,x=team.x+lx*cos+lz*sin+.5,z=team.z-lx*sin+lz*cos+.5;part(21,x,17.35,z,.48,.7,.38,team.rotation);part(20,x,18,z,.7,.7,.4,team.rotation);part(19,x,18.65,z,.58,.58,.58,team.rotation);part(24+n,x,19.55,z,1.5,.7,.08,team.rotation);} }
  const gems=[];for(const p of [...DIAMOND_ISLANDS.map(([x,z])=>[x,z,22]),...EMERALD_ISLANDS.map(([x,z])=>[x,z,23])]){const gem=part(p[2],p[0]+.5,17.8,p[1]+.5,.43,.43,.43);gem.rotation.z=Math.PI/4;gems.push(gem);}
  return {gems,dispose(){for(const part of parts)part.geometry.dispose();}};
 }

@@ -9,7 +9,7 @@ export function placeBotBlock(bot,x,y,z,id){const m=bot.match,w=m.world,p=bot.pl
 export function nextDefence(bot){const plan=bot.director.defences[bot.player.team];for(let n=0;n<plan.cells.length;n++){const index=(plan.cursor+n)%plan.cells.length,cell=plan.cells[index];if(bot.match.world.get(cell.x,cell.y,cell.z))continue;plan.cursor=index;return cell;}return null;}
 export function buildDefence(bot){const cell=nextDefence(bot);if(!cell)return false;const p=bot.player.body;if(Math.hypot(p.x-cell.x-.5,p.z-cell.z-.5)>3.5)return false;if(bot.match.clock<bot.placeAt)return true;if(placeBotBlock(bot,cell.x,cell.y,cell.z,cell.id)){bot.placeAt=bot.match.clock+bot.difficulty.bridge;bot.director.defences[bot.player.team].cursor++;}return true;}
 export function mineEnemyBed(bot,team){
- const m=bot.match,p=bot.player.body,t=TEAMS[team];if(!t||team===bot.player.team||!m.beds[team])return false;
+ const m=bot.match,p=bot.player.body,t=TEAMS[team];if(!t||m.allied(team,bot.player.team)||!m.beds[team])return false;
  const dx=t.x+Math.round(Math.sin(t.rotation))*4+.5-p.x,dy=17.28-p.y-p.eyeHeight,dz=t.z+Math.round(Math.cos(t.rotation))*4+.5-p.z,length=Math.hypot(dx,dy,dz);
  if(length>6||length<.001)return false;
  const hit=voxelRaycast(m.world,p.x,p.y+p.eyeHeight,p.z,dx/length,dy/length,dz/length,Math.min(length,4.45),bot.mineHit);
