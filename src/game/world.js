@@ -5,7 +5,7 @@ import { DIRS, CORNERS, TRI, SHADE, tileFor, blockHeight, isGlass, isLadder, blo
 // Edits patch only affected faces in-place, including a boundary face in its
 // existing neighbour buffer; no world rebuild and no neighbour remeshing.
 export default class World {
- constructor(scene,material){this.scene=scene;this.material=material;this.chunks=new Array(4096).fill(null);this.ready=false;this.meshCount=0;this.dirty=new Int16Array(12288);this.dirtyCount=0;
+ constructor(scene,material){this.scene=scene;this.material=material;this.chunks=new Array(4096).fill(null);this.ready=false;this.navigationRevision=0;this.meshCount=0;this.dirty=new Int16Array(12288);this.dirtyCount=0;
   // Reserve the finite world's voxel storage up front. Crossing a chunk edge
   // while bridging never creates an object or typed array inside a tick.
   for(let x=-256;x<256;x+=16)for(let y=0;y<64;y+=16)for(let z=-256;z<256;z+=16)this.chunk(x,y,z,true);
@@ -18,7 +18,7 @@ export default class World {
  index(x,y,z){return ((y&15)*16+(z&15))*16+(x&15);}
  get(x,y,z){const c=this.chunk(x,y,z);return c?c.data[this.index(x,y,z)]:0;}
  editable(x,y,z){const c=this.chunk(x,y,z);return c&&c.placed[this.index(x,y,z)]===1;}
- set(x,y,z,id,placed=false){const c=this.chunk(x,y,z);if(!c)return;const i=this.index(x,y,z);if(!c.data[i]&&id)c.nonempty++;else if(c.data[i]&&!id)c.nonempty--;c.data[i]=id;c.placed[i]=placed?1:0;if(this.ready&&this.dirtyCount<4096){const q=this.dirtyCount++*3;this.dirty[q]=x;this.dirty[q+1]=y;this.dirty[q+2]=z;}}
+ set(x,y,z,id,placed=false){const c=this.chunk(x,y,z);if(!c)return;const i=this.index(x,y,z);if(!c.data[i]&&id)c.nonempty++;else if(c.data[i]&&!id)c.nonempty--;c.data[i]=id;c.placed[i]=placed?1:0;this.navigationRevision++;if(this.ready&&this.dirtyCount<4096){const q=this.dirtyCount++*3;this.dirty[q]=x;this.dirty[q+1]=y;this.dirty[q+2]=z;}}
  flush(){for(let j=0;j<this.dirtyCount;j++){const q=j*3,x=this.dirty[q],y=this.dirty[q+1],z=this.dirty[q+2],c=this.chunk(x,y,z);if(!c.mesh)this.build(c);else this.refresh(c,x,y,z);for(let f=0;f<6;f++){const d=DIRS[f],nx=x+d[0],ny=y+d[1],nz=z+d[2],n=this.chunk(nx,ny,nz);if(n?.mesh)this.refresh(n,nx,ny,nz);}}this.dirtyCount=0;}
  visible(x,y,z,id,f){const d=DIRS[f],n=this.get(x+d[0],y+d[1],z+d[2]);if(!n||isLadder(n)||isLadder(id))return true;if(isGlass(n))return id!==n;return blockHeight(n)<blockHeight(id)||(f===2&&blockHeight(id)<1);}
  buildAll(){for(let k=0;k<4096;k++)if(this.chunks[k]?.nonempty)this.build(this.chunks[k]);this.ready=true;}

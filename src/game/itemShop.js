@@ -4,7 +4,7 @@ import { SHOP_ITEMS,resolveOffer,CURRENCY_NAMES } from '@/game/shopCatalog';
 export default class ItemShop {
  constructor(match){this.match=match;}
  offers(){return SHOP_ITEMS.map(entry=>resolveOffer(entry,this.match.players[0]));}
- purchase(key,shift=false){if(!this.match.canPlay())return {ok:false,message:'You cannot shop while spectating.'};const entry=SHOP_ITEMS.find(item=>item.key===key);if(!entry)return {ok:false,message:'Item unavailable.'};const player=this.match.players[0],offer=resolveOffer(entry,player),inv=player.inventory,gear=player.gear;
+ purchase(key,shift=false,playerIndex=0){if(this.match.phase!=='active'||!this.match.players[playerIndex]?.alive)return {ok:false,message:'You cannot shop while spectating.'};const entry=SHOP_ITEMS.find(item=>item.key===key);if(!entry)return {ok:false,message:'Item unavailable.'};const player=this.match.players[playerIndex],offer=resolveOffer(entry,player),inv=player.inventory,gear=player.gear;
   if(offer.owned)return {ok:false,message:'You already own this upgrade or better!'};
   const available=inv.total(offer.currency);if(available<offer.cost)return {ok:false,message:"You don't have enough "+CURRENCY_NAMES[offer.currency]+'!'};
   if(offer.type==='armor'){inv.spend(offer.currency,offer.cost);gear.armourTier=offer.tier;player.armour=ARMOUR[offer.tier].points;return {ok:true,message:'Purchased '+offer.name+'!'};}

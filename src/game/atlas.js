@@ -20,7 +20,7 @@ export function createAtlas(){
  }
  for(let stage=0;stage<10;stage++){const t=32+stage,ox=t%8*16,oy=(t/8|0)*16;c.clearRect(ox,oy,16,16);c.strokeStyle='#151719';c.lineWidth=1;for(let j=0;j<stage+2;j++){c.beginPath();c.moveTo(ox+8,oy+8);let x=8,y=8;for(let n=0;n<4;n++){x+=(random()-.5)*7;y+=(random()-.5)*7;c.lineTo(ox+Math.max(0,Math.min(15,x|0)),oy+Math.max(0,Math.min(15,y|0)));}c.stroke();}}
  for(let i=0;i<2;i++){const t=24+i,ox=t%8*16,oy=(t/8|0)*16;c.fillStyle='#273432';c.fillRect(ox,oy,16,16);c.font='bold 5px monospace';c.textAlign='center';c.fillStyle=i?'#94ddcf':'#f1d48d';c.fillText(i?'TEAM':'ITEM',ox+8,oy+6);c.fillText(i?'UPGR.':'SHOP',ox+8,oy+12);}
- const names=['You','BlueDummy','GreenDummy','YellowDummy'],teamColors=['#ef7777','#80adff','#94d775','#ffe17b'];
+ const names=['Red','Blue','Green','Yellow'],teamColors=['#ef7777','#80adff','#94d775','#ffe17b'];
  for(let i=0;i<4;i++){const oy=96+i*8;c.fillStyle='#111b22bb';c.fillRect(0,oy,128,8);c.font='bold 8px monospace';c.textAlign='center';c.textBaseline='top';c.fillStyle=teamColors[i];c.fillText(names[i],64,oy);}
  c.textBaseline='alphabetic';
  const swordColors=['#b38b56','#989f9e','#e4eaeb','#58d9cf'];for(let i=0;i<4;i++){const ox=(26+i)%8*16,oy=Math.floor((26+i)/8)*16;c.clearRect(ox,oy,16,16);c.fillStyle='#705132';for(let p=0;p<4;p++)c.fillRect(ox+2+p,oy+12-p,2,2);c.fillStyle=swordColors[i];for(let p=0;p<8;p++)c.fillRect(ox+6+p,oy+8-p,2,2);c.fillRect(ox+3,oy+8,2,2);c.fillRect(ox+5,oy+10,2,2);c.fillRect(ox+7,oy+12,2,2);}
