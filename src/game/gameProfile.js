@@ -1,0 +1,5 @@
+const USERNAME_KEY='bwclone.username',FOV_KEY='bwclone.fov',SENSITIVITY_KEY='bwclone.sensitivity';
+export const validUsername=value=>/^[A-Za-z0-9_]{3,16}$/.test(value);
+const clamp=(value,min,max,fallback)=>Number.isFinite(value)&&value>=min&&value<=max?value:fallback;
+export default function readGameProfile(){try{const username=localStorage.getItem(USERNAME_KEY)||'';return {username:validUsername(username)?username:'',fov:clamp(Number(localStorage.getItem(FOV_KEY)),50,110,70),sensitivity:clamp(Number(localStorage.getItem(SENSITIVITY_KEY)),10,100,50)};}catch{return {username:'',fov:70,sensitivity:50};}}
+export function saveGameProfile(profile){if(!validUsername(profile.username))throw new Error('Use 3–16 letters, numbers or underscores.');try{localStorage.setItem(USERNAME_KEY,profile.username);localStorage.setItem(FOV_KEY,String(profile.fov));localStorage.setItem(SENSITIVITY_KEY,String(profile.sensitivity));}catch{throw new Error('Allow local storage in this browser to save your username.');}return profile;}
