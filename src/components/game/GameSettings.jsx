@@ -1,0 +1,8 @@
+import React,{useState} from 'react';
+import MinecraftPanel from '@/components/game/MinecraftPanel';
+export default function GameSettings({profile,onSave,onBack}) {
+ const [draft,setDraft]=useState({...profile}),[error,setError]=useState('');
+ const update=(key,value)=>{setDraft(current=>({...current,[key]:value}));setError('');};
+ const submit=event=>{event.preventDefault();try{onSave({...draft,username:draft.username.trim()});}catch(error){setError(error.message);}};
+ return <MinecraftPanel title="Settings" subtitle="Your username and controls stay on this device."><form className="minecraft-form" onSubmit={submit} noValidate><label htmlFor="settings-username">Username</label><input id="settings-username" value={draft.username} onChange={event=>update('username',event.target.value)} maxLength={16} autoComplete="off" spellCheck={false} aria-invalid={!!error} aria-describedby="settings-name-help settings-error"/><small id="settings-name-help">3–16 letters, numbers or underscores.</small><label htmlFor="settings-fov">Field of view: {draft.fov}°</label><input id="settings-fov" type="range" min="50" max="110" value={draft.fov} onChange={event=>update('fov',Number(event.target.value))}/><label htmlFor="settings-sensitivity">Mouse sensitivity: {draft.sensitivity}%</label><input id="settings-sensitivity" type="range" min="10" max="100" value={draft.sensitivity} onChange={event=>update('sensitivity',Number(event.target.value))}/><p id="settings-error" className="game-error" role="alert">{error}</p><button className="minecraft-button minecraft-button-primary" type="submit">Save Settings</button><button className="minecraft-button" type="button" onClick={onBack}>Back</button></form></MinecraftPanel>;
+}

@@ -10,12 +10,11 @@ const IDLE={down(){return false;},sprint:false};
 export const EVENT={START:1,BED:2,DEATH:3,ELIMINATED:4,END:5,RESPAWN:6,TIMELINE:7,UPGRADE:8,TRAP:9};
 
 export default class Match {
- constructor(world,player,input,interaction,fireworks,options={}){this.world=world;this.input=input;this.interaction=interaction;this.fireworks=fireworks;this.beds=interaction.beds;this.phase='waiting';this.countdown=300;this.clock=0;this.winner=-1;this.endAt=0;this.resultReady=false;this.localOut=false;this.finishedByTime=false;this.eliminated=new Uint8Array(4);this.events=new Int16Array(256);this.eventRead=0;this.eventWrite=0;this.aimingAtEnemy=false;this.ray=new THREE.Ray();this.box=new THREE.Box3();this.point=new THREE.Vector3();this.settings=botSettings(options);this.players=botRoster(world,player,interaction,this.settings);
+ constructor(world,player,input,interaction,fireworks,options={}){this.world=world;this.input=input;this.interaction=interaction;this.fireworks=fireworks;this.beds=interaction.beds;this.phase='waiting';this.countdown=300;this.clock=0;this.winner=-1;this.endAt=0;this.resultReady=false;this.localOut=false;this.finishedByTime=false;this.eliminated=new Uint8Array(this.beds.length);this.events=new Int16Array(256);this.eventRead=0;this.eventWrite=0;this.aimingAtEnemy=false;this.ray=new THREE.Ray();this.box=new THREE.Box3();this.point=new THREE.Vector3();this.settings=botSettings(options);this.players=botRoster(world,player,interaction,this.settings);
 
   this.teamUpgrades=new TeamUpgrades(this);this.botDirector=new BotDirector(this);
  }
  emit(type,a=0,b=0,c=0){const i=(this.eventWrite++%64)*4;this.events[i]=type;this.events[i+1]=a;this.events[i+2]=b;this.events[i+3]=c;if(this.eventWrite-this.eventRead>64)this.eventRead=this.eventWrite-64;}
- configure(options){if(this.phase!=='waiting')return false;const settings=botSettings(options);if(settings.botsPerTeam===this.settings.botsPerTeam&&settings.difficulty===this.settings.difficulty)return false;this.settings=settings;this.players=botRoster(this.world,this.players[0].body,this.interaction,settings);this.teamUpgrades=new TeamUpgrades(this);this.botDirector=new BotDirector(this);return true;}
  begin(){if(this.phase==='waiting'){this.phase='countdown';this.countdown=300;}}
  canPlay(){return this.phase==='active'&&this.players[0].alive;}
  setArmour(index){this.players[0].armour=ARMOUR[index]?.points??7;this.players[0].gear.armourTier=ARMOUR[index]?index:1;}

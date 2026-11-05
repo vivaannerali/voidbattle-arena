@@ -1,0 +1,5 @@
+import React from 'react';
+import MinecraftPanel from '@/components/game/MinecraftPanel';
+export default function GamePauseMenu({mode,error,onResume,onQuit}) {
+ return <MinecraftPanel title={error?'Unable to start':mode==='start'?'Enter the Arena':'Game Paused'} subtitle="Your offline game is paused.">{error&&<p className="game-error" role="alert">{error}</p>}{mode==='lock-error'&&<p className="game-error">Mouse capture was blocked. Open the preview in a separate tab, then try again.</p>}<button className="minecraft-button minecraft-button-primary" onClick={onResume}>{error?'Try Again':mode==='start'||mode==='lock-error'?'Enter the Arena':'Resume Game'}</button><button className="minecraft-button" onClick={onQuit}>Quit to Menu</button><div className="game-key-guide"><span><kbd>W A S D</kbd> Move</span><span><kbd>SPACE</kbd> Jump</span><span><kbd>CTRL</kbd> Sprint</span><span><kbd>SHIFT</kbd> Sneak / bridge</span><span><kbd>LMB</kbd> Attack / mine</span><span><kbd>RMB</kbd> Shop / place</span><span><kbd>E</kbd> Inventory</span><span><kbd>TAB</kbd> Players</span></div></MinecraftPanel>;
+}

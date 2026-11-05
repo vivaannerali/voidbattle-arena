@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { createAtlas } from '@/game/atlas';
 import World from '@/game/world';
-import { makeMap } from '@/game/map';
+import { makeMap,configureArena } from '@/game/map';
 import Physics from '@/game/physics';
 import Input from '@/game/input';
 import Interaction from '@/game/interaction';
 import { createScenery,createTarget,updateTarget,blockGeometry } from '@/game/visuals';
-import { B,NAMES,BUILD_HEIGHT } from '@/game/blocks';
+import { B,NAMES,BUILD_HEIGHT,isLadder } from '@/game/blocks';
 import Match from '@/game/match';
 import MatchPresentation from '@/game/matchPresentation';
 import Avatar from '@/game/avatar';
@@ -22,6 +22,7 @@ import pixelItemGeometry from '@/game/pixelItemGeometry';
 
 export default class Engine {
  constructor(container,onHUD,onMenu,options={}){
+  configureArena(options.teamMode);
   this.container=container;this.onHUD=onHUD;this.onMenu=onMenu;this.disposed=false;this.debug=false;this.started=false;this.resultsOpen=false;this.resultsReported=false;this.inventoryOpen=false;this.shopTeam=-1;this.upgradeTeam=-1;this.blindnessActive=false;this.ticks=0;this.fps=0;this.frames=0;this.frameClock=0;this.accumulator=0;this.renderClock=0;this.last=performance.now();this.time=0;
   this.renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));this.renderer.outputColorSpace=THREE.SRGBColorSpace;container.appendChild(this.renderer.domElement);
   this.scene=new THREE.Scene();this.scene.background=new THREE.Color('#a3c9e8');this.scene.fog=new THREE.Fog('#a3c9e8',80,170);this.camera=new THREE.PerspectiveCamera(70,1,.06,210);this.camera.rotation.order='YXZ';this.scene.add(this.camera);
@@ -29,11 +30,10 @@ export default class Engine {
   this.world=new World(this.scene,this.material);makeMap(this.world);this.player=new Physics(this.world);this.player.pitch=-.08;
   this.input=new Input(this.renderer.domElement,this.player,active=>{if(active){this.started=true;this.match.begin();}this.onMenu(this.resultsOpen?'results':this.upgradeTeam>=0?'upgrades':this.shopTeam>=0?'shop':this.inventoryOpen?'inventory':active?'playing':this.started?'paused':'start');},(n,r)=>this.interaction.select(n,r),()=>{this.debug=!this.debug;this.publish();},()=>this.toggleInventory(),()=>this.publish());
   this.interaction=new Interaction(this.world,this.player,this.input);this.scenery=createScenery(this.scene,this.propMaterial);this.target=createTarget(this.scene,this.atlas.texture);this.fireworks=new Fireworks(this.scene);this.match=new Match(this.world,this.player,this.input,this.interaction,this.fireworks,options);this.interaction.combat=this.match;this.generators=new Generators(this.scene,this.material,this.atlas.texture,this.match);this.timeline=new GameEvents(this.match,this.generators);this.match.generators=this.generators;this.match.timeline=this.timeline;this.shopNPCs=new ShopNPCs(this.scene,this.atlas.texture);this.itemShop=new ItemShop(this.match);this.upgradeNPCs=new ShopNPCs(this.scene,this.atlas.texture,'upgrades');this.interaction.upgradesNPCs=this.upgradeNPCs;this.interaction.onUpgrade=team=>this.openUpgrades(team);this.interaction.shops=this.shopNPCs;this.interaction.onShop=team=>this.openShop(team);this.presentation=new MatchPresentation();this.avatars=this.match.players.map(state=>new Avatar(this.scene,this.atlas.texture,state.team,state.name));
-  this.held=new THREE.Mesh(blockGeometry(B.RED),this.material);this.held.scale.setScalar(.23);this.held.rotation.set(.2,-.5,.08);this.held.renderOrder=10;this.heldMaterial=this.material.clone();this.heldMaterial.depthTest=false;this.heldMaterial.depthWrite=false;this.held.material=this.heldMaterial;this.camera.add(this.held);this.heldId=B.RED;this.heldGeometries=new Array(64);this.heldGeometries[B.RED]=this.held.geometry;for(let id=1;id<=26;id++)if(!this.heldGeometries[id])this.heldGeometries[id]=id>=23?pixelItemGeometry(id):blockGeometry(id);for(let tier=0;tier<4;tier++)this.heldGeometries[32+tier]=swordGeometry(tier);for(let id=40;id<=43;id++)this.heldGeometries[id]=resourceGeometry(id);this.heldGeometries[36]=pixelItemGeometry(36);for(let id=50;id<=58;id++)this.heldGeometries[id]=pixelItemGeometry(id);
+  this.held=new THREE.Mesh(blockGeometry(B.RED),this.material);this.held.scale.setScalar(.23);this.held.rotation.set(.2,-.5,.08);this.held.renderOrder=10;this.heldMaterial=this.material.clone();this.heldMaterial.depthTest=false;this.heldMaterial.depthWrite=false;this.held.material=this.heldMaterial;this.camera.add(this.held);this.heldId=B.RED;this.heldGeometries=new Array(128);this.heldGeometries[B.RED]=this.held.geometry;for(const id of Object.values(B))if(id&&!this.heldGeometries[id])this.heldGeometries[id]=isLadder(id)?pixelItemGeometry(id):blockGeometry(id);for(let tier=0;tier<4;tier++)this.heldGeometries[32+tier]=swordGeometry(tier);for(let id=40;id<=43;id++)this.heldGeometries[id]=resourceGeometry(id);this.heldGeometries[36]=pixelItemGeometry(36);for(let id=50;id<=58;id++)this.heldGeometries[id]=pixelItemGeometry(id);
   this.resize=()=>{const w=container.clientWidth,h=container.clientHeight;this.renderer.setSize(w,h);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();};this.resize();window.addEventListener('resize',this.resize);
   this.frame=this.frame.bind(this);this.publish=this.publish.bind(this);this.hudTimer=setInterval(this.publish,150);this.camera.position.set(this.player.x,this.player.y+1.62,this.player.z);this.renderer.render(this.scene,this.camera);this.publish();this.raf=requestAnimationFrame(this.frame);
  }
- configureBots(options){if(!this.started&&this.match.configure(options)){for(const avatar of this.avatars)avatar.dispose(this.scene);this.avatars=this.match.players.map(state=>new Avatar(this.scene,this.atlas.texture,state.team,state.name));this.publish();}}
  openUpgrades(team){if(!this.match.canPlay()||!this.input.active||!this.upgradeNPCs.inReach(this.player,team))return;this.upgradeTeam=team;this.shopTeam=-1;this.inventoryOpen=false;this.input.inventoryOpen=true;this.input.clear();document.exitPointerLock();this.onMenu('upgrades');this.publish();}
  buyUpgrade(key){if(this.upgradeTeam<0||!this.upgradeNPCs.inReach(this.player,this.upgradeTeam))return {ok:false,message:'Move closer to the Team Upgrades villager.'};const result=this.match.teamUpgrades.purchase(0,key);this.publish();return result;}
  openShop(team){if(!this.match.canPlay()||!this.input.active||!this.shopNPCs.inReach(this.player,team))return;this.shopTeam=team;this.inventoryOpen=false;this.input.inventoryOpen=true;this.input.clear();document.exitPointerLock();this.onMenu('shop');this.publish();}

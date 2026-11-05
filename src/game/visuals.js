@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CORNERS,TRI,SHADE,tileFor,blockHeight,blockX,blockZ } from '@/game/blocks';
-import { TEAMS } from '@/game/map';
+import { TEAMS,DIAMOND_ISLANDS,EMERALD_ISLANDS } from '@/game/map';
 
 export function cubeGeometry(tile,height=1){const g=new THREE.BoxGeometry(1,height,1);const a=g.attributes.uv;for(let i=0;i<a.count;i++){const u=a.getX(i),v=a.getY(i);a.setXY(i,(tile%8+.002+u*.996)/8,1-((tile/8|0)+.998-v*.996)/16);}return g;}
 export function blockGeometry(id){const p=[],uv=[],colors=[];for(let f=0;f<6;f++){const tile=tileFor(id,f),co=CORNERS[f];for(let v=0;v<6;v++){const n=TRI[v];p.push(blockX(id,co[n*3])-.5,co[n*3+1]*blockHeight(id)-.5,blockZ(id,co[n*3+2])-.5);uv.push((tile%8+(n===1||n===2?.998:.002))/8,1-((tile/8|0)+(n<2?.998:.002))/16);colors.push(SHADE[f],SHADE[f],SHADE[f]);}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));return g;}
@@ -8,7 +8,7 @@ export function createScenery(scene,material){
  const clouds=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0xffffff,fog:true}),42),m=new THREE.Matrix4();for(let i=0;i<42;i++){m.makeScale(9+(i%4)*4,1.5,5+(i%3)*4);m.setPosition((i%7-3)*43,49+(i%3)*2,(Math.floor(i/7)-3)*43);clouds.setMatrixAt(i,m);}scene.add(clouds);
  const parts=[];function part(tile,x,y,z,sx,sy,sz,rotation=0){const mesh=new THREE.Mesh(cubeGeometry(tile),material);mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.rotation.y=rotation;scene.add(mesh);parts.push(mesh);return mesh;}
  for(const team of TEAMS){const sin=Math.sin(team.rotation),cos=Math.cos(team.rotation);for(let n=0;n<2;n++){const lx=n===0?-4:4,lz=6,x=team.x+lx*cos+lz*sin+.5,z=team.z-lx*sin+lz*cos+.5;part(21,x,17.35,z,.48,.7,.38,team.rotation);part(20,x,18,z,.7,.7,.4,team.rotation);part(19,x,18.65,z,.58,.58,.58,team.rotation);part(24+n,x,19.55,z,1.5,.7,.08,team.rotation);} }
- const gems=[];for(const p of [[-27,27,22],[-27,-27,22],[27,-27,22],[27,27,22],[0,-7,23],[0,7,23]]){const gem=part(p[2],p[0]+.5,17.8,p[1]+.5,.43,.43,.43);gem.rotation.z=Math.PI/4;gems.push(gem);}
+ const gems=[];for(const p of [...DIAMOND_ISLANDS.map(([x,z])=>[x,z,22]),...EMERALD_ISLANDS.map(([x,z])=>[x,z,23])]){const gem=part(p[2],p[0]+.5,17.8,p[1]+.5,.43,.43,.43);gem.rotation.z=Math.PI/4;gems.push(gem);}
  return {clouds,gems,dispose(){clouds.geometry.dispose();clouds.material.dispose();for(const part of parts)part.geometry.dispose();}};
 }
 export function createTarget(scene,texture){const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.005,1.005,1.005)),new THREE.LineBasicMaterial({color:0x121212}));const crack=new THREE.Mesh(cubeGeometry(32),new THREE.MeshBasicMaterial({map:texture,transparent:true,alphaTest:.1,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));crack.scale.setScalar(1.003);scene.add(outline,crack);outline.visible=crack.visible=false;return {outline,crack,stage:-1};}

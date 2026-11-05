@@ -1,0 +1,8 @@
+import React,{useState} from 'react';
+import MinecraftPanel from '@/components/game/MinecraftPanel';
+import { TEAM_MODES } from '@/game/arenaModes';
+import { BOT_DIFFICULTIES } from '@/game/botSettings';
+export default function GameSoloSetup({onPlay,onBack}) {
+ const [teamMode,setTeamMode]=useState('Solos'),[difficulty,setDifficulty]=useState('Normal'),spec=TEAM_MODES[teamMode];
+ return <MinecraftPanel title="Solo vs Bots" subtitle="BOTS ONLY · OFFLINE GAMEPLAY"><div className="minecraft-mode-grid" aria-label="Team mode">{Object.entries(TEAM_MODES).map(([name,mode])=><button key={name} className={name===teamMode?'minecraft-button minecraft-button-selected':'minecraft-button'} aria-pressed={name===teamMode} onClick={()=>setTeamMode(name)}>{name}<small>{mode.teams} teams of {mode.size}</small></button>)}</div><label className="minecraft-select-label" htmlFor="solo-difficulty">Bot difficulty<select id="solo-difficulty" value={difficulty} onChange={event=>setDifficulty(event.target.value)}>{Object.keys(BOT_DIFFICULTIES).map(level=><option key={level}>{level}</option>)}</select></label><p className="minecraft-summary">{teamMode} · {spec.teams} teams · You + {spec.teams*spec.size-1} bots</p><p className="minecraft-note">{spec.size===1?'Defend your bed against seven bot teams.':`Your team includes ${spec.size-1} bot ${spec.size===2?'teammate':'teammates'}.`} No connection needed once the game has loaded.</p><button className="minecraft-button minecraft-button-primary" onClick={()=>onPlay({teamMode,difficulty})}>Start Game</button><button className="minecraft-button" onClick={onBack}>Back</button></MinecraftPanel>;
+}

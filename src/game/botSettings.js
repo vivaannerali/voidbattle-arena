@@ -1,5 +1,6 @@
+import { TEAM_MODES } from '@/game/arenaModes';
 export const BOT_DIFFICULTIES={Easy:{reaction:42,turn:.045,aim:.32,reach:2.65,attack:45,bridge:28},Normal:{reaction:22,turn:.08,aim:.13,reach:2.85,attack:31,bridge:17},Hard:{reaction:9,turn:.14,aim:.035,reach:2.95,attack:23,bridge:10}};
-export function botSettings(options={}){return {botsPerTeam:Math.max(1,Math.min(4,Math.round(Number(options.botsPerTeam)||2))),difficulty:BOT_DIFFICULTIES[options.difficulty]?options.difficulty:'Normal'};}
+export function botSettings(options={}){const teamMode=TEAM_MODES[options.teamMode]?options.teamMode:'Solos';return {teamMode,botsPerTeam:TEAM_MODES[teamMode].size,username:/^[A-Za-z0-9_]{3,16}$/.test(options.username||'')?options.username:'Player',difficulty:BOT_DIFFICULTIES[options.difficulty]?options.difficulty:'Normal'};}
 const FIRST=['Void','Block','Cobalt','Ender','Pixel','Sky','Iron','Creeper','Wool','Frost','Lunar','Redstone','Quartz','Epic','Swift','Obsidian'];
 const LAST=['Ninja','Miner','Knight','PvP','Crafter','Rush','Fox','Pilot','Panda','Wolf','Bridger','Clutch','Dragon','Builder','Bee','Ace'];
-export function botUsername(used){let name;do{name=(Math.random()<.18?'_':'')+FIRST[Math.random()*FIRST.length|0]+LAST[Math.random()*LAST.length|0]+(Math.random()*100|0);}while(used.has(name));used.add(name);return name;}
+export function botUsername(used){let name;do{name=(Math.random()<.18?'_':'')+FIRST[Math.random()*FIRST.length|0]+LAST[Math.random()*LAST.length|0]+(Math.random()*100|0);name=name.slice(0,16);}while(used.has(name));used.add(name);return name;}
