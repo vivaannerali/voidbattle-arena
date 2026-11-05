@@ -16,7 +16,7 @@ export const CORNERS = [
  [0,0,1, 1,0,1, 1,1,1, 0,1,1], [1,0,0, 0,0,0, 0,1,0, 1,1,0]
 ];
 export const TRI = [0,1,2,0,2,3];
-export const SHADE = [0.80,0.80,1,0.48,0.68,0.68];
+export const SHADE = [0.60,0.60,1,0.50,0.80,0.80];
 export function tileFor(id,face) {
  if(id===B.GRASS) return face===2 ? 0 : face===3 ? 1 : 2;
  if(id===B.DIRT) return 1;
@@ -32,4 +32,4 @@ export function isGlass(id){return id===B.GLASS||(id>=B.RED_GLASS&&id<=B.YELLOW_
 export function isLadder(id){return id>=B.LADDER&&id<=B.LADDER_NORTH;}
 export function blockX(id,x){return id===B.LADDER?x*.08:id===B.LADDER_WEST?.92+x*.08:x;}
 export function blockZ(id,z){return id===B.LADDER_SOUTH?z*.08:id===B.LADDER_NORTH?.92+z*.08:z;}
-export function tileUV(tile,corner){const x=tile%8,y=Math.floor(tile/8); return [(x+(corner===1||corner===2?0.998:0.002))/8,1-(y+(corner<2?0.998:0.002))/16];}
+export function tileUV(tile,corner){return [(tile%8*20+2+(corner===1||corner===2?15.98:.02))/160,1-(Math.floor(tile/8)*20+2+(corner<2?15.98:.02))/320];}

@@ -29,6 +29,8 @@
 
 .game-interface{position:absolute;left:0;top:0;width:calc(100% / var(--game-gui-scale,1));height:calc(100% / var(--game-gui-scale,1));transform:scale(var(--game-gui-scale,1));transform-origin:top left;pointer-events:none}.game-interface .game-menu-backdrop,.game-interface .game-inventory-backdrop,.game-interface .game-results-backdrop{pointer-events:auto}.game-interface .game-menu{max-height:calc(95dvh / var(--game-gui-scale,1))}.game-interface .game-shop{max-height:calc((100dvh - 28px) / var(--game-gui-scale,1))}.game-interface .game-results{max-height:calc(94dvh / var(--game-gui-scale,1))}.game-interface .game-bottom-hud{max-width:95%}
 
+.game-graphics-controls{border-top:2px solid var(--minecraft-shadow);margin:8px 0 12px;padding-top:12px;display:grid;gap:14px}.game-graphics-controls legend{color:var(--battle-gold);font-size:25px}.game-graphics-controls label{display:flex;justify-content:space-between;align-items:center;gap:16px}.game-graphics-controls select{font-family:var(--font-game);font-size:23px;background:var(--minecraft-border);color:var(--battle-text);border:2px solid var(--minecraft-highlight);padding:7px 10px;width:50%}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
