@@ -12,6 +12,9 @@ import Game from '@/pages/Game';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
+  // This public, account-free game must not wait for an online account check.
+  if (window.location.pathname === '/') return <Game />;
+
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -36,7 +39,6 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Game />} />
-      <Route path="/Game" element={<Game />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
