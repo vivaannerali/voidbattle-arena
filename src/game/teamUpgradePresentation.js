@@ -1,5 +1,5 @@
 import { TEAM_NAMES,TEAM_CSS } from '@/game/equipment';
-import { purchasedUpgradeName,TRAPS } from '@/game/teamUpgradeCatalog';
+import { purchasedUpgradeName,TRAPS,TEAM_UPGRADES } from '@/game/teamUpgradeCatalog';
 
-export default function teamUpgradePresentation(view,match,type,a,b,c){const local=match.players[0];if(type===8){const buyer=match.players[a];if(buyer.team!==local.team)return;view.add(match,'[TEAM] '+buyer.name+(b>=5?' queued ':' purchased ')+purchasedUpgradeName(b,c)+'!','gold');return;}
+export default function teamUpgradePresentation(view,match,type,a,b,c){const local=match.players[0];if(type===8){const buyer=match.players[a];if(buyer.team!==local.team)return;view.add(match,'[TEAM] '+buyer.name+(b>=TEAM_UPGRADES.length?' queued ':' purchased ')+purchasedUpgradeName(b,c)+'!','gold');return;}
  const trap=TRAPS[c-1],enemy=match.players[b];if(a===local.team){view.add(match,'[TEAM] TRAP TRIGGERED > '+enemy.name+' triggered '+trap.name+' at your base!',TEAM_CSS[a]);view.show(match,'TRAP TRIGGERED!',trap.name+' caught '+enemy.name+' at your base!','red',210);}else if(enemy.team===local.team){view.add(match,'You triggered '+TEAM_NAMES[a]+" Team's "+trap.name+'!','red');view.show(match,c===1?"IT'S A TRAP!":c===3?'ALARM!':'ENEMY TRAP!',TEAM_NAMES[a]+' Team activated '+trap.name+'!','red',180);}}

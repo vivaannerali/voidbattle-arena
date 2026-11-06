@@ -1,4 +1,12 @@
 import React from 'react';
+import { Zap,ArrowUp,Eye,EyeOff,Heart,Pickaxe,Shield,Sword,Feather,Hourglass } from 'lucide-react';
 import { ROMAN } from '@/game/teamUpgradeCatalog';
-
-export default function GameTeamEffects({data}) {const u=data.upgrades,e=data.effects;if(!u||!e)return null;return <>{e.blindness>0&&<div className="game-blindness"/>}<div className="game-team-effects" aria-label="Active team bonuses and effects">{u.sharpness>0&&<span>Sharpness I</span>}{u.protection>0&&<span>Protection {ROMAN[u.protection-1]}</span>}{u.haste>0&&<span>Haste {ROMAN[u.haste-1]}</span>}{u.healActive&&<span>Heal Pool · Regeneration I</span>}{[['blindness','Blindness'],['slowness','Slowness'],['speed','Speed I'],['jump','Jump Boost II'],['fatigue','Mining Fatigue I'],['reveal','Revealed']].map(([key,name])=>e[key]>0&&<span className={['blindness','slowness','fatigue','reveal'].includes(key)?'game-effect-negative':''} key={key}>{name} · {e[key]}s</span>)}</div></>;}
+const TEMPORARY=[['blindness','Blindness',EyeOff,true],['slowness','Slowness',Hourglass,true],['speed','Speed II',Zap],['jump','Jump Boost II',ArrowUp],['invisibility','Invisibility',EyeOff],['fatigue','Mining Fatigue I',Pickaxe,true],['reveal','Revealed',Eye,true]];
+export default function GameTeamEffects({data}) {
+ const u=data.upgrades,e=data.effects;if(!u||!e)return null;
+ const bonuses=[['Sharpness I',Sword,u.sharpness],['Protection '+ROMAN[u.protection-1],Shield,u.protection],['Haste '+ROMAN[u.haste-1],Pickaxe,u.haste],['Regeneration I',Heart,u.healActive],['Feather Falling '+ROMAN[u.feather-1],Feather,u.feather]];
+ return <><div className="game-team-effects" aria-label="Active bonuses and effects">
+  {bonuses.map(([label,Icon,active])=>active?<span className="game-effect-row" key={label}><Icon size={16}/>{label}<small>∞</small></span>:null)}
+  {TEMPORARY.map(([key,label,Icon,negative])=>e[key]>0?<span className={'game-effect-row '+(negative?'game-effect-negative':'')} key={key}><Icon size={16}/>{label}<small>{e[key]}s</small></span>:null)}
+ </div></>;
+}

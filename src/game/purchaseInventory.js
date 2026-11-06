@@ -11,6 +11,7 @@ export default function purchaseInventory(inventory,offer,shift){
   if(!staged.spend(offer.currency,offer.cost*bundles))continue;
   let amount=offer.quantity*bundles;if(preferred>=0){staged.ids[preferred]=offer.id;staged.counts[preferred]=1;amount--;}
   if(amount>0&&staged.add(offer.id,amount))continue;
+  if(preferred<0&&!inventory.total(offer.id)){const target={sword:0,block:1,pickaxe:2,axe:3,shears:4,stick:5}[offer.type],at=staged.ids.findIndex((id,i)=>id===offer.id&&staged.counts[i]>0);if(target!==undefined&&at>=0&&at!==target){const id=staged.ids[target],count=staged.counts[target];staged.ids[target]=staged.ids[at];staged.counts[target]=staged.counts[at];staged.ids[at]=id;staged.counts[at]=count;}}
   inventory.ids.set(staged.ids);inventory.counts.set(staged.counts);inventory.revision++;return bundles;
  }return 0;
 }

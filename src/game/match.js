@@ -12,7 +12,7 @@ const IDLE={down(){return false;},sprint:false};
 export const EVENT={START:1,BED:2,DEATH:3,ELIMINATED:4,END:5,RESPAWN:6,TIMELINE:7,UPGRADE:8,TRAP:9};
 
 export default class Match {
- constructor(world,player,input,interaction,fireworks,options={}){this.world=world;this.input=input;this.interaction=interaction;this.fireworks=fireworks;this.beds=interaction.beds;this.phase='waiting';this.countdown=300;this.clock=0;this.winner=-1;this.endAt=0;this.resultReady=false;this.localOut=false;this.finishedByTime=false;this.eliminated=new Uint8Array(this.beds.length);this.events=new Int16Array(256);this.eventRead=0;this.eventWrite=0;this.aimingAtEnemy=false;this.lineHit={valid:false};this.ray=new THREE.Ray();this.box=new THREE.Box3();this.point=new THREE.Vector3();this.settings=botSettings(options);this.players=botRoster(world,player,interaction,this.settings);
+ constructor(world,player,input,interaction,fireworks,options={}){this.world=world;this.input=input;this.interaction=interaction;this.fireworks=fireworks;this.beds=interaction.beds;this.phase='waiting';this.countdown=300;this.clock=0;this.winner=-1;this.endAt=0;this.resultReady=false;this.localOut=false;this.finishedByTime=false;this.eliminated=new Uint8Array(this.beds.length);this.events=new Int16Array(256);this.eventRead=0;this.eventWrite=0;this.aimingAtEnemy=false;this.lineHit={valid:false};this.ray=new THREE.Ray();this.box=new THREE.Box3();this.point=new THREE.Vector3();this.settings=botSettings(options);this.players=botRoster(world,player,interaction,this.settings);this.players[0].interaction=interaction;
 
   for(let t=0;t<this.beds.length;t++)if(!this.players.some(s=>s.team===t)){this.beds[t]=0;this.eliminated[t]=1;}
   this.teamUpgrades=new TeamUpgrades(this);this.botDirector=new BotDirector(this);
@@ -29,7 +29,7 @@ export default class Match {
   if(this.phase==='finished'||!this.players[0].alive)this.spectatorTick();
   for(let i=0;i<this.players.length;i++){const s=this.players[i];if(s.hitFlash>0)s.hitFlash--;if(s.hurtTicks>0)s.hurtTicks--;if(s.spawnGuard>0)s.spawnGuard--;if(s.swingTicks>0)s.swingTicks--;s.hitAge++;s.attackAge++;
    if(!s.alive){if(this.phase==='active'&&s.respawnTicks>0&&--s.respawnTicks===0){if(this.beds[s.team])this.respawn(i);else this.finalize(i);}continue;}if(this.phase!=='active')continue;
-   const p=s.body;p.tick(i===0?this.input:s.control||s.bot?.input||IDLE);if(p.y< -20){this.die(i,s.attackAge<600?s.lastAttacker:-1);continue;}if(s.hitAge>360&&s.health<20&&++s.regen>=80){s.health=Math.min(20,s.health+1);s.regen=0;}
+   const p=s.body;p.tick(i===0?this.input:s.control||s.bot?.input||IDLE);if(p.fallDamage>0){s.health=Math.max(0,s.health-this.teamUpgrades.fallDamage(i,p.fallDamage));p.fallDamage=0;s.hitFlash=10;s.hitAge=s.regen=0;if(s.health<=0){this.die(i,s.attackAge<600?s.lastAttacker:-1);continue;}}if(p.y< -20){this.die(i,s.attackAge<600?s.lastAttacker:-1);continue;}if(s.hitAge>360&&s.health<20&&++s.regen>=80){s.health=Math.min(20,s.health+1);s.regen=0;}
 
   }
   if(this.phase==='active')this.generators?.tick();

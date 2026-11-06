@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CORNERS,TRI,SHADE,tileFor,blockHeight,blockX,blockZ } from '@/game/blocks';
-import { TEAMS,DIAMOND_ISLANDS,EMERALD_ISLANDS } from '@/game/map';
+import { DIAMOND_ISLANDS,EMERALD_ISLANDS } from '@/game/map';
 import { atlasU,atlasV } from '@/game/atlasLayout';
 
 export function cubeGeometry(tile,height=1){const g=new THREE.BoxGeometry(1,height,1);const a=g.attributes.uv;for(let i=0;i<a.count;i++){const u=a.getX(i),v=a.getY(i);a.setXY(i,atlasU(tile,.02+u*15.96),atlasV(tile,15.98-v*15.96));}return g;}
@@ -8,8 +8,7 @@ export function blockGeometry(id){const p=[],uv=[],colors=[];for(let f=0;f<6;f++
 export function createScenery(scene,material){
 
  const parts=[];function part(tile,x,y,z,sx,sy,sz,rotation=0){const mesh=new THREE.Mesh(cubeGeometry(tile),material);mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.rotation.y=rotation;scene.add(mesh);parts.push(mesh);return mesh;}
- for(const team of TEAMS){if(team.active===false)continue;const sin=Math.sin(team.rotation),cos=Math.cos(team.rotation);for(let n=0;n<2;n++){const lx=n===0?-4:4,lz=6,x=team.x+lx*cos+lz*sin+.5,z=team.z-lx*sin+lz*cos+.5;part(21,x,17.35,z,.48,.7,.38,team.rotation);part(20,x,18,z,.7,.7,.4,team.rotation);part(19,x,18.65,z,.58,.58,.58,team.rotation);part(24+n,x,19.55,z,1.5,.7,.08,team.rotation);} }
- const gems=[];for(const p of [...DIAMOND_ISLANDS.map(([x,z])=>[x,z,22]),...EMERALD_ISLANDS.map(([x,z])=>[x,z,23])]){const gem=part(p[2],p[0]+.5,17.8,p[1]+.5,.43,.43,.43);gem.rotation.z=Math.PI/4;gems.push(gem);}
+  const gems=[];for(const p of [...DIAMOND_ISLANDS.map(([x,z])=>[x,z,22]),...EMERALD_ISLANDS.map(([x,z])=>[x,z,23])]){const gem=part(p[2],p[0]+.5,19.1,p[1]+.5,.65,.65,.65);gems.push(gem);}
  return {gems,dispose(){for(const part of parts)part.geometry.dispose();}};
 }
 export function createTarget(scene,texture){const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.005,1.005,1.005)),new THREE.LineBasicMaterial({color:0x121212}));const crack=new THREE.Mesh(cubeGeometry(32),new THREE.MeshBasicMaterial({map:texture,transparent:true,alphaTest:.1,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));crack.scale.setScalar(1.003);scene.add(outline,crack);outline.visible=crack.visible=false;return {outline,crack,stage:-1};}

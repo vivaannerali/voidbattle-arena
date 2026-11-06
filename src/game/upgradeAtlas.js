@@ -5,5 +5,6 @@ export default function drawUpgradeTiles(c){const origin=tile=>({x:tile%8*16,y:M
  const blind=origin(88);rect(blind,1,5,14,6,'#a69cbd');rect(blind,3,3,10,10,'#a69cbd');rect(blind,5,4,6,8,'#3a274e');rect(blind,7,5,2,5,'#e1c4ff');rect(blind,3,13,10,1,'#65517d');
  const counter=origin(89);for(let n=0;n<12;n++){rect(counter,2+n,13-n,2,2,'#b8ed9c');if(n<9)rect(counter,4+n,12-n,3,1,'#7cc374');}rect(counter,9,1,5,3,'#e2ffcf');
  const alarm=origin(90);rect(alarm,7,9,2,7,'#98744b');rect(alarm,4,3,8,7,'#b74655');rect(alarm,6,1,4,11,'#ef7080');rect(alarm,7,2,2,5,'#ffdbad');rect(alarm,1,2,2,2,'#ffd279');rect(alarm,13,2,2,2,'#ffd279');
+ const boots=origin(123);rect(boots,2,3,4,8,'#c5e8f1');rect(boots,10,3,4,8,'#c5e8f1');rect(boots,1,10,6,4,'#84b7cb');rect(boots,9,10,6,4,'#84b7cb');rect(boots,3,3,1,7,'#f3ffff');rect(boots,11,3,1,7,'#f3ffff');
  const fatigue=copy(70,91);rect(fatigue,1,1,2,7,'#e45f72');rect(fatigue,5,1,2,7,'#e45f72');rect(fatigue,1,7,6,2,'#e45f72');
 }

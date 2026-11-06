@@ -3,7 +3,7 @@ import ShopOfferSlot from '@/components/game/ShopOfferSlot';
 import ShopTooltip from '@/components/game/ShopTooltip';
 import ShopPlayerInventory from '@/components/game/ShopPlayerInventory';
 import UpgradeTrapQueue from '@/components/game/UpgradeTrapQueue';
-const SLOTS=[1,2,3,4,5,10,11,12,13];
+const SLOTS=[1,2,3,4,5,6,10,11,12,13];
 
 export default function GameTeamUpgrades({data,onBuy,onMove,onClose}) {
  const [hover,setHover]=useState(null),[result,setResult]=useState(null),upgrades=data.upgrades;
