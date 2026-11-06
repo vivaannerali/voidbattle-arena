@@ -2,7 +2,7 @@ import { B } from '@/game/blocks';
 import { TEAMS } from '@/game/map';
 import { modePrice } from '@/game/modeRules';
 import { EXTRA_ITEMS } from '@/game/extraItems';
-export const SHOP_CATEGORIES=[{key:'quick',name:'Quick Buy',icon:63},{key:'blocks',name:'Blocks',icon:B.RED},{key:'melee',name:'Melee',icon:33},{key:'armor',name:'Armor',icon:61},{key:'tools',name:'Tools',icon:50},{key:'potions',name:'Potions',icon:78},{key:'utility',name:'Utility',icon:77},{key:'ranged',name:'Ranged',icon:83}];
+export const SHOP_CATEGORIES=[{key:'quick',name:'Quick Buy',icon:63},{key:'blocks',name:'Blocks',icon:B.RED},{key:'melee',name:'Melee',icon:33},{key:'armor',name:'Armor',icon:61},{key:'tools',name:'Tools',icon:50},{key:'potions',name:'Potions',icon:78},{key:'utility',name:'Utility',icon:77},{key:'ranged',name:'Ranged',icon:83},{key:'rotating',name:'Rotating Items',icon:43}];
 export const SHOP_ITEMS=[
  {key:'wool',name:'Wool',category:'blocks',type:'block',id:B.RED,quantity:16,cost:4,currency:40,team:true},
  {key:'clay',name:'Hardened Clay',category:'blocks',type:'block',id:B.RED_CLAY,quantity:16,cost:12,currency:40,team:true},

@@ -19,7 +19,7 @@ export function zapBlocks(i){
  const m=i.combat,s=m.players[i.playerIndex],p=i.p,cp=Math.cos(p.pitch),h=i.utilityHit||(i.utilityHit={valid:false});
  voxelRaycast(m.world,p.x,p.y+p.eyeHeight,p.z,-Math.sin(p.yaw)*cp,Math.sin(p.pitch),-Math.cos(p.yaw)*cp,12,h);
  const team=h.valid?TEAMS.findIndex(t=>t.wool===h.id||t.clay===h.id||t.glass===h.id):-1;
- if(team<0||m.allied(team,s.team)||!m.world.editable(h.x,h.y,h.z)){i.message('Aim at placed enemy team-coloured blocks within 12 blocks.');return false;}
+ if(!h.valid||h.id!==B.OBSIDIAN&&(team<0||m.allied(team,s.team))||!m.world.editable(h.x,h.y,h.z)){i.message('Aim at placed obsidian or enemy team-coloured blocks within 12 blocks.');return false;}
  const queue=[[h.x,h.y,h.z]],seen=new Set();let removed=0;
  for(let n=0;n<queue.length&&removed<9;n++){
   const [x,y,z]=queue[n],key=x+','+y+','+z;if(seen.has(key))continue;seen.add(key);

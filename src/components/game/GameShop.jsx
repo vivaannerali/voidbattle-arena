@@ -5,6 +5,7 @@ import GameShopTabs from '@/components/game/GameShopTabs';
 import ShopOfferSlot from '@/components/game/ShopOfferSlot';
 import ShopTooltip from '@/components/game/ShopTooltip';
 import ShopPlayerInventory from '@/components/game/ShopPlayerInventory';
+import GameShopRotation from '@/components/game/GameShopRotation';
 
 export default function GameShop({data,onBuy,onMove,onClose}) {
  const [category,setCategory]=useState('quick'),[hover,setHover]=useState(null),[result,setResult]=useState(null),[quick,setQuick]=useState(readQuickBuy),[pending,setPending]=useState(null);
@@ -16,6 +17,7 @@ export default function GameShop({data,onBuy,onMove,onClose}) {
   <header><h2>Item Shop · {title}</h2><button onClick={onClose} aria-label="Close shop">Esc <span>×</span></button></header>
   <div className="inventory-resource-totals">{['Iron','Gold','Diamonds','Emeralds'].map((name,i)=><span key={name} className={'resource-color-'+i}>{name} <b>{data.resources[i]}</b></span>)}</div>
   <GameShopTabs category={category} onChange={value=>{setCategory(value);setHover(null);setPending(null);setResult(null);}} atlas={data.atlas} team={data.localTeam}/>
+  {category==='rotating'&&<GameShopRotation rotation={data.shopRotation}/>}
   <div className={'inventory-grid shop-offers '+(pending?'shop-choosing-favourite':'')} role="tabpanel" aria-label={pending?'Choose a Quick Buy slot':title}>
    {Array.from({length:36},(_,i)=>offers[i]?<ShopOfferSlot key={i} offer={offers[i]} atlas={data.atlas} onBuy={(key,shift)=>pending?favourite(i):buy(key,shift)} onHover={(offer,x,y)=>setHover({offer,x,y})} onLeave={()=>setHover(null)}/>:pending&&i<27?<button key={i} className="inventory-slot shop-favourite-choice" aria-label={'Set Quick Buy slot '+(i+1)} onClick={()=>favourite(i)}/>:<div key={i} className="inventory-slot shop-empty-slot" aria-hidden="true"/>)}
   </div>
