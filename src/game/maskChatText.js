@@ -1,0 +1,1 @@
+export default function maskChatText(text){return text.replace(/jeb/gi,'***');}

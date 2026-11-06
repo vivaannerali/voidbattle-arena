@@ -2,8 +2,9 @@ import { TEAM_MODES } from '@/game/arenaModes';
 import { balanceTeams,reconcileParty,startProblem } from '@/game/party/partyRules';
 import { mapsForMode } from '@/game/mapCatalog';
 import { beginMapVote,castMapVote } from '@/game/party/mapVoting';
+import maskChatText from '@/game/maskChatText';
 export default function partyAction(session,id,action){const state=session.state,p=state?.players.find(p=>p.id===id);if(!p||!action||typeof action.type!=='string')return;
- if(action.type==='chat'){const text=typeof action.text==='string'?action.text.trim().slice(0,180):'';if(!text||Date.now()-(p.lastChat||0)<500)return;p.lastChat=Date.now();state.messages.push({id:crypto.randomUUID(),username:p.username,text});state.messages=state.messages.slice(-60);session.sync();return;}
+ if(action.type==='chat'){const text=typeof action.text==='string'?maskChatText(action.text.trim().slice(0,180)):'';if(!text||Date.now()-(p.lastChat||0)<500)return;p.lastChat=Date.now();state.messages.push({id:crypto.randomUUID(),username:p.username,text});state.messages=state.messages.slice(-60);session.sync();return;}
  if(action.type==='back'){if(session.canReturn)session.returnToLobby();return;}
  if(action.type==='vote'){castMapVote(session,id,action.mapId);return;}
   if(state.phase!=='lobby')return;
