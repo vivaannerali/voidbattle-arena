@@ -5,6 +5,7 @@ import { nearestEnemy,botCombat } from '@/game/botCombat';
 import { basePoint,nextDefence,buildDefence,mineEnemyBed } from '@/game/botConstruction';
 import { gridKey } from '@/game/botGrid';
 import { TEAMS } from '@/game/map';
+import { BED_SHIFT } from '@/game/bedLayout';
 import { tickBotOrder,buyChatOrder } from '@/game/botChatOrders';
 export default class BotBrain {
  constructor(director,index){this.director=director;this.match=director.match;this.index=index;this.player=this.match.players[index];this.difficulty=director.difficulty;this.input=new BotInput();this.nav=new BotNavigation(director.grid);this.action='idle';this.goalX=this.goalZ=999;this.nextThink=index*3;this.placeAt=this.attackAt=0;this.mineX=this.mineY=this.mineZ=-999;this.mineProgress=0;this.mineId=0;this.mineHit={valid:false};this.target=-1;this.enemyTeam=-1;this.trip=0;this.lastGemAt=-9999;this.waitUntil=0;this.aimOffset=0;this.wasAlive=true;this.stuckTicks=0;this.lastX=this.player.body.x;this.lastZ=this.player.body.z;this.lastPlan=0;this.recoverUntil=0;this.lastWorkAt=0;}
@@ -29,7 +30,7 @@ export default class BotBrain {
   if(this.action==='collect'||this.action==='shop'||this.action==='upgrade')this.action='idle';
   if(this.action==='diamond'||this.action==='emerald'){if(this.atGoal(1.1)){if(!this.waitUntil)this.waitUntil=m.clock+480;const id=this.action==='diamond'?42:43;if(p.inventory.total(id)>=2||m.clock>=this.waitUntil){this.lastGemAt=m.clock;this.trip++;this.waitUntil=0;const point=this.director.generators[p.team];this.go('return',point.x,point.z);}}return;}
   if(this.action==='attack'&&(!m.beds[this.enemyTeam]||this.nav.failed))this.action='idle';if(this.action==='hunt'){const enemy=nearestEnemy(this);if(enemy<0)return;this.go('hunt',m.players[enemy].body.x,m.players[enemy].body.z);return;}
-  if(this.action==='idle'){this.enemyTeam=this.director.nearestTeam(this);if(this.enemyTeam<0){this.action='hunt';return;}if(m.timeline.elapsed>=120*60&&m.clock-this.lastGemAt>3600&&(this.trip+p.slot)%3!==2){const emerald=m.timeline.elapsed>150*60&&(this.trip+p.slot)%3===1,point=this.director.resourcePoint(this,emerald);this.waitUntil=0;this.go(emerald?'emerald':'diamond',point.x,point.z);return;}const point=basePoint(this.enemyTeam,0,1);this.go('attack',point.x,point.z);}
+  if(this.action==='idle'){this.enemyTeam=this.director.nearestTeam(this);if(this.enemyTeam<0){this.action='hunt';return;}if(m.timeline.elapsed>=120*60&&m.clock-this.lastGemAt>3600&&(this.trip+p.slot)%3!==2){const emerald=m.timeline.elapsed>150*60&&(this.trip+p.slot)%3===1,point=this.director.resourcePoint(this,emerald);this.waitUntil=0;this.go(emerald?'emerald':'diamond',point.x,point.z);return;}const point=basePoint(this.enemyTeam,0,1-BED_SHIFT);this.go('attack',point.x,point.z);}
  }
  tick(){this.input.clear();const m=this.match,p=this.player;if(!p.alive){this.wasAlive=false;this.nav.cancel();return;}if(!this.wasAlive){this.wasAlive=true;this.action='idle';this.nextThink=0;this.lastX=p.body.x;this.lastZ=p.body.z;this.stuckTicks=0;this.waitUntil=0;}attemptClutch(this);if(m.clock>=this.nextThink){this.nextThink=m.clock+this.difficulty.reaction;this.think();}let working=false;
   if(this.target>=0&&botCombat(this,this.target))working=true;
