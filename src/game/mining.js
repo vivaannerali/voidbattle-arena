@@ -5,5 +5,5 @@ export function miningSeconds(block,tool){if(bed(block))return .65;const pick=to
  if(block===B.OBSIDIAN)return pick>=0?[35,20,30,4][pick]:50;
  if(block===B.END)return pick>=0?[1.8,.95,.7,.5][pick]:6;
  if(isClay(block))return pick>=0?[1.2,.7,.4,.3][pick]:2.5;
- if(isGlass(block))return .3;if(isLadder(block))return axe>=0?.15:.4;return pick>=0?.4:1.5;
+ if(isGlass(block))return 1/60;if(isLadder(block))return axe>=0?.15:.4;return pick>=0?.4:1.5;
 }

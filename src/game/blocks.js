@@ -1,3 +1,4 @@
+import { ATLAS_ROWS,ATLAS_WIDTH,ATLAS_HEIGHT } from '@/game/atlasLayout';
 export const B = Object.freeze({ AIR:0, GRASS:1, DIRT:2, STONE:3, RED:4, BLUE:5, GREEN:6, YELLOW:7, WHITE:8, RED_CLAY:9, BLUE_CLAY:10, GREEN_CLAY:11, YELLOW_CLAY:12, END:13, OAK:14, OBSIDIAN:15, GLASS:16, BED_FOOT:17, BED_HEAD:18, RED_GLASS:19, BLUE_GLASS:20, GREEN_GLASS:21, YELLOW_GLASS:22, LADDER:23, LADDER_WEST:24, LADDER_SOUTH:25, LADDER_NORTH:26, AQUA:27, PINK:28, GREY:29, AQUA_CLAY:96, WHITE_CLAY:97, PINK_CLAY:98, GREY_CLAY:99, AQUA_GLASS:100, WHITE_GLASS:101, PINK_GLASS:102, GREY_GLASS:103, QUARTZ:104, BRICK:105, MOSS:106, LEAVES:107, LOG:108, SNOW:109, ICE:110, DIORITE:111, SPRUCE:112, LANTERN:113, METAL:114, ASPHALT:115, WAFFLE:116, PASTEL:117, PEACH:118, BARS:119 });
 export const NAMES = ['', 'Grass', 'Dirt', 'Stone', 'Red wool', 'Blue wool', 'Green wool', 'Yellow wool', 'White wool', 'Red clay', 'Blue clay', 'Green clay', 'Yellow clay', 'End stone', 'Oak planks', 'Obsidian', 'Glass', 'Bed', 'Bed', 'Red blast-proof glass', 'Blue blast-proof glass', 'Green blast-proof glass', 'Yellow blast-proof glass', 'Ladder', 'Ladder', 'Ladder', 'Ladder'];
 Object.assign(NAMES,{27:'Aqua wool',28:'Pink wool',29:'Grey wool',96:'Aqua clay',97:'White clay',98:'Pink clay',99:'Grey clay',100:'Aqua blast-proof glass',101:'White blast-proof glass',102:'Pink blast-proof glass',103:'Grey blast-proof glass'});
@@ -8,7 +9,7 @@ export function isWool(id){return id>=B.RED&&id<=B.WHITE||id>=B.AQUA&&id<=B.GREY
 export function isClay(id){return id>=B.RED_CLAY&&id<=B.YELLOW_CLAY||id>=B.AQUA_CLAY&&id<=B.GREY_CLAY;}
 export const SPAWN = Object.freeze({x:0.5,y:17.001,z:52.5});
 export const BUILD_HEIGHT = 40;
-export const TILE_COUNT = 128;
+export const TILE_COUNT = ATLAS_ROWS*8;
 export const ATLAS_SIZE = 128;
 export const DIRS = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
 export const CORNERS = [
@@ -34,4 +35,4 @@ export function isGlass(id){return id===B.GLASS||(id>=B.RED_GLASS&&id<=B.YELLOW_
 export function isLadder(id){return id>=B.LADDER&&id<=B.LADDER_NORTH;}
 export function blockX(id,x){return id===B.LADDER?x*.08:id===B.LADDER_WEST?.92+x*.08:x;}
 export function blockZ(id,z){return id===B.LADDER_SOUTH?z*.08:id===B.LADDER_NORTH?.92+z*.08:z;}
-export function tileUV(tile,corner){return [(tile%8*20+2+(corner===1||corner===2?15.98:.02))/160,1-(Math.floor(tile/8)*20+2+(corner<2?15.98:.02))/320];}
+export function tileUV(tile,corner){return [(tile%8*20+2+(corner===1||corner===2?15.98:.02))/ATLAS_WIDTH,1-(Math.floor(tile/8)*20+2+(corner<2?15.98:.02))/ATLAS_HEIGHT];}

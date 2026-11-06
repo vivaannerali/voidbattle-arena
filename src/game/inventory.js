@@ -1,7 +1,7 @@
 import { isSword } from '@/game/equipment';
 export const RESOURCE_IDS=[40,41,42,43];
 export function isResource(id){return id>=40&&id<=43;}
-export function stackLimit(id){return isSword(id)||id===36||(id>=50&&id<=62)?1:64;}
+export function stackLimit(id){return isSword(id)||id===36||id===76||(id>=50&&id<=62)||(id>=78&&id<=81)?1:64;}
 
 // Slot 0–8 is the hotbar; 9–35 is the three-row inventory. Never React state.
 export default class Inventory {

@@ -1,0 +1,3 @@
+.game-hearts .heart-absorption{color:var(--battle-gold)}
+.game-pack-icy .game-hearts .heart-absorption{background:var(--battle-gold);box-shadow:inset 3px 2px var(--battle-yellow),inset -3px -3px var(--frost-dark)}
+.game-pack-icy .game-hearts .heart-absorption.heart-half{background:linear-gradient(to right,var(--battle-gold) 50%,var(--frost-dark) 50%)}

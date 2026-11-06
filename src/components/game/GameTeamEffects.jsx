@@ -1,7 +1,7 @@
 import React from 'react';
 import { Zap,ArrowUp,Eye,EyeOff,Heart,Pickaxe,Shield,Sword,Feather,Hourglass } from 'lucide-react';
 import { ROMAN } from '@/game/teamUpgradeCatalog';
-const TEMPORARY=[['blindness','Blindness',EyeOff,true],['slowness','Slowness',Hourglass,true],['speed','Speed II',Zap],['jump','Jump Boost II',ArrowUp],['invisibility','Invisibility',EyeOff],['fatigue','Mining Fatigue I',Pickaxe,true],['reveal','Revealed',Eye,true]];
+const TEMPORARY=[['blindness','Blindness',EyeOff,true],['slowness','Slowness',Hourglass,true],['speed','Speed II',Zap],['jump','Jump Boost II',ArrowUp],['jumpPotion','Jump Boost V',ArrowUp],['milk','Trap immunity',Shield],['regeneration','Regeneration II',Heart],['absorption','Absorption',Heart],['invisibility','Invisibility',EyeOff],['fatigue','Mining Fatigue I',Pickaxe,true],['reveal','Revealed',Eye,true]];
 export default function GameTeamEffects({data}) {
  const u=data.upgrades,e=data.effects;if(!u||!e)return null;
  const bonuses=[['Sharpness I',Sword,u.sharpness],['Protection '+ROMAN[u.protection-1],Shield,u.protection],['Haste '+ROMAN[u.haste-1],Pickaxe,u.haste],['Regeneration I',Heart,u.healActive],['Feather Falling '+ROMAN[u.feather-1],Feather,u.feather]];
