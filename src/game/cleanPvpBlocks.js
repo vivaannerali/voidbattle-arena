@@ -1,0 +1,12 @@
+import { B,tileFor } from '@/game/blocks';
+import { palette } from '@/game/blockTexturePaint';
+export const CLEAN_TEAM=['#ff354e','#326aff','#62eb38','#ffdf27','#26eeee','#fafaff','#ff72cd','#8c95a9'];
+export function smoothTile(c,tile,color,kind='plain'){const x=tile%8*16,y=(tile/8|0)*16,shades=palette(color,.2);c.clearRect(x,y,16,16);if(kind==='glass'){c.strokeStyle=color;c.lineWidth=1;c.strokeRect(x+.5,y+.5,15,15);c.fillStyle='#efffff';c.fillRect(x+2,y+2,3,1);return;}
+ for(let row=0;row<16;row++){c.fillStyle=shades[Math.min(5,5-(row/3|0))];c.fillRect(x,y+row,16,1);}c.strokeStyle='rgba(0,0,0,.055)';c.lineWidth=1;c.strokeRect(x+.5,y+.5,15,15);
+ c.fillStyle='rgba(0,0,0,.11)';if(kind==='oak')for(const row of [5,10,15])c.fillRect(x,y+row,16,1);if(kind==='end')for(const [px,py] of [[3,4],[11,11]])c.fillRect(x+px,y+py,2,1);if(kind==='obsidian'){c.fillStyle='#49326b';c.fillRect(x+2,y+11,6,1);c.fillRect(x+9,y+5,4,1);}
+ if(kind==='grass-side'){c.fillStyle='#68d94a';c.fillRect(x,y,16,4);}if(kind==='ladder'){c.clearRect(x,y,16,16);c.fillStyle='#32241c';for(const px of [3,11])c.fillRect(x+px,y,3,16);c.fillStyle='#f0bb69';for(const px of [4,12])c.fillRect(x+px,y,1,16);for(const py of [2,6,10,14])c.fillRect(x+4,y+py,8,2);}}
+export default function cleanPvpBlocks(c){for(const [tile,color,kind] of [[0,'#69dc4a','plain'],[1,'#a6774c','plain'],[2,'#a6774c','grass-side'],[3,'#a6acb9','plain'],[13,'#fff0b2','end'],[14,'#e5b46f','oak'],[15,'#211831','obsidian'],[16,'#c7f5ff','glass'],[68,'#e5b46f','ladder'],[21,'#465064','plain'],[22,'#26eeee','plain'],[23,'#32f47a','plain']])smoothTile(c,tile,color,kind);
+ const wool=[B.RED,B.BLUE,B.GREEN,B.YELLOW,B.AQUA,B.WHITE,B.PINK,B.GREY],clay=[9,10,11,12,96,97,98,99],glass=[19,20,21,22,100,101,102,103];
+ for(let team=0;team<8;team++){smoothTile(c,tileFor(wool[team],2),CLEAN_TEAM[team]);smoothTile(c,tileFor(clay[team],2),CLEAN_TEAM[team]);smoothTile(c,tileFor(glass[team],2),CLEAN_TEAM[team],'glass');for(let head=0;head<2;head++){const tile=104+team*2+head,x=tile%8*16,y=(tile/8|0)*16;smoothTile(c,tile,CLEAN_TEAM[team]);if(head){c.fillStyle='#fffef1';c.fillRect(x+1,y+1,14,6);}}}
+ smoothTile(c,120,'#f3e8d5');const x=120%8*16,y=(120/8|0)*16;c.fillStyle='#ac7842';c.fillRect(x,y+8,16,3);c.clearRect(x+3,y+11,10,5);c.fillRect(x,y+11,3,5);c.fillRect(x+13,y+11,3,5);smoothTile(c,122,'#e5b46f','oak');for(let head=0;head<2;head++)c.drawImage(c.canvas,(104+head)%8*16,((104+head)/8|0)*16,16,16,(17+head)%8*16,((17+head)/8|0)*16,16,16);
+}
