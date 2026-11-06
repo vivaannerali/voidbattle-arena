@@ -2,7 +2,7 @@ import { B } from '@/game/blocks';
 import { TEAMS } from '@/game/map';
 import { modePrice } from '@/game/modeRules';
 import { EXTRA_ITEMS } from '@/game/extraItems';
-export const SHOP_CATEGORIES=[{key:'quick',name:'Quick Buy',icon:63},{key:'blocks',name:'Blocks',icon:B.RED},{key:'melee',name:'Melee',icon:33},{key:'armor',name:'Armor',icon:61},{key:'tools',name:'Tools',icon:50},{key:'potions',name:'Potions',icon:78},{key:'utility',name:'Utility',icon:77}];
+export const SHOP_CATEGORIES=[{key:'quick',name:'Quick Buy',icon:63},{key:'blocks',name:'Blocks',icon:B.RED},{key:'melee',name:'Melee',icon:33},{key:'armor',name:'Armor',icon:61},{key:'tools',name:'Tools',icon:50},{key:'potions',name:'Potions',icon:78},{key:'utility',name:'Utility',icon:77},{key:'ranged',name:'Ranged',icon:83}];
 export const SHOP_ITEMS=[
  {key:'wool',name:'Wool',category:'blocks',type:'block',id:B.RED,quantity:16,cost:4,currency:40,team:true},
  {key:'clay',name:'Hardened Clay',category:'blocks',type:'block',id:B.RED_CLAY,quantity:16,cost:12,currency:40,team:true},
@@ -30,7 +30,7 @@ export const CURRENCY_NAMES={40:'Iron',41:'Gold',42:'Diamond',43:'Emerald'};
 export function resolveOffer(entry,player,mode='Solos'){const offer={...entry,owned:false},gear=player.gear;if(entry.key==='diamond_sword')offer.cost=modePrice(4,3,mode);if(entry.team){const team=TEAMS[player.team];offer.id=entry.key==='wool'?team.wool:entry.key==='clay'?team.clay:team.glass;}
  if(entry.type==='pickaxe'||entry.type==='axe'){const tier=gear[entry.type+'Tier'],next=Math.min(3,tier+1);offer.tier=next;offer.id=entry.id+next;offer.name=(entry.type==='pickaxe'?['Wooden','Iron','Golden','Diamond']:['Wooden','Stone','Iron','Diamond'])[next]+' '+(entry.type==='pickaxe'?'Pickaxe':'Axe');offer.cost=(entry.type==='pickaxe'?[10,10,3,12]:[10,10,3,6])[next];offer.currency=next<2?40:41;offer.owned=tier===3;offer.tierLabel=['I','II','III','IV'][next];offer.description=(entry.type==='pickaxe'?['Efficiency I.','Efficiency II.','Efficiency III.','Efficiency III.']:['Efficiency I.','Efficiency I.','Efficiency II.','Efficiency III.'])[next]+' Drops one tier on death, never below Tier I.';}
  else if(entry.type==='armor'){offer.owned=gear.armourTier>=entry.tier;offer.description='Permanent upgrade. Kept after death.';}else if(entry.type==='shears')offer.owned=gear.shears;
- else if(entry.type==='sword'){for(let i=0;i<36;i++)if(player.inventory.counts[i]&&player.inventory.ids[i]>=entry.id&&player.inventory.ids[i]<=35)offer.owned=true;offer.description='Replaces your current sword. Lost on death.';}else if(entry.type==='stick')offer.owned=player.inventory.total(36)>0;
+ else if(entry.type==='sword'){for(let i=0;i<36;i++)if(player.inventory.counts[i]&&player.inventory.ids[i]>=entry.id&&player.inventory.ids[i]<=35)offer.owned=true;offer.description='Replaces your current sword. Lost on death.';}else if(entry.type==='stick')offer.owned=player.inventory.total(36)>0;else if(entry.id===86)offer.owned=player.inventory.total(86)>0;
  if(entry.type==='block')offer.description=entry.team?'Automatically matches your team.':entry.key==='ladder'?'Place on a wall. Hold W to climb.':'Place blocks with right-click.';
  return offer;
 }

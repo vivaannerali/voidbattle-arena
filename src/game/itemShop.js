@@ -15,7 +15,7 @@ export default class ItemShop {
   if(inv.total(offer.currency)<offer.cost)return {ok:false,message:"You don't have enough "+CURRENCY_NAMES[offer.currency]+'!'};
   if(offer.type==='armor'){if(!inv.spend(offer.currency,offer.cost))return {ok:false,message:'Not enough resources.'};gear.armourTier=offer.tier;player.armour=ARMOUR[offer.tier].points;return this.success(playerIndex,offer,entry);}
   const bundles=purchaseInventory(inv,offer,shift);if(!bundles)return {ok:false,message:'Your inventory is full!'};
-  if(offer.type==='pickaxe'||offer.type==='axe')gear[offer.type+'Tier']=offer.tier;if(offer.type==='shears')gear.shears=true;if(offer.type==='sword')player.sword=offer.id;
+  if(offer.type==='pickaxe'||offer.type==='axe')gear[offer.type+'Tier']=offer.tier;if(offer.type==='shears')gear.shears=true;if(offer.type==='sword')player.sword=offer.id;if(offer.id===86)player.machineBowUses=0;
   return this.success(playerIndex,offer,entry);
  }
 }

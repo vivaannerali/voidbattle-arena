@@ -13,7 +13,7 @@ export default class Input {
  }
  listen(target,event,fn,options){target.addEventListener(event,fn,options);this.handlers.push([target,event,fn,options]);}
  down(code){return this.keys[CODES[code]]===1;}
- clear(){this.keys.fill(0);this.left=this.right=this.sprint=false;this.attackPresses=0;this.rightPressed=0;this.tabHeld=false;}
+ clear(){this.clearVersion=(this.clearVersion||0)+1;this.keys.fill(0);this.left=this.right=this.sprint=false;this.attackPresses=0;this.rightPressed=0;this.tabHeld=false;}
  start(){this.startupCapture=true;this.active=true;this.onLock(true);}
   unlock(){this.startupCapture=false;if(document.pointerLockElement===this.canvas){document.exitPointerLock();}else{this.active=false;this.clear();this.onLock(false);}}
   lock(){return this.canvas.requestPointerLock();}

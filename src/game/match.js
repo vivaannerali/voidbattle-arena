@@ -7,6 +7,7 @@ import { botSettings } from '@/game/botSettings';
 import BotDirector from '@/game/botDirector';
 import TntSystem from '@/game/tntSystem';
 import FireballSystem from '@/game/fireballSystem';
+import ArrowSystem from '@/game/arrowSystem';
 import LocalBotChat from '@/game/localBotChat';
 import { diePlayer,respawnPlayer,destroyTeamBed,finalizePlayer } from '@/game/matchLifecycle';
 import TeamUpgrades from '@/game/teamUpgrades';
@@ -20,7 +21,7 @@ export default class Match {
  constructor(world,player,input,interaction,fireworks,options={}){this.world=world;this.input=input;this.interaction=interaction;this.fireworks=fireworks;this.beds=interaction.beds;this.phase='waiting';this.countdown=300;this.clock=0;this.winner=-1;this.endAt=0;this.resultReady=false;this.localOut=false;this.finishedByTime=false;this.eliminated=new Uint8Array(this.beds.length);this.events=new Int16Array(256);this.eventRead=0;this.eventWrite=0;this.aimingAtEnemy=false;this.lineHit={valid:false};this.ray=new THREE.Ray();this.box=new THREE.Box3();this.point=new THREE.Vector3();this.settings=botSettings(options);this.players=botRoster(world,player,interaction,this.settings);this.players[0].interaction=interaction;
 
   for(let t=0;t<this.beds.length;t++)if(!this.players.some(s=>s.team===t)){this.beds[t]=0;this.eliminated[t]=1;}
-  this.teamUpgrades=new TeamUpgrades(this);this.tnt=new TntSystem(this);this.fireballs=new FireballSystem(this);this.botDirector=new BotDirector(this);this.chat=new LocalBotChat(this);
+  this.teamUpgrades=new TeamUpgrades(this);this.tnt=new TntSystem(this);this.fireballs=new FireballSystem(this);this.arrows=new ArrowSystem(this);this.botDirector=new BotDirector(this);this.chat=new LocalBotChat(this);
  }
  emit(type,a=0,b=0,c=0){this.chat?.event(type,a,b);const i=(this.eventWrite++%64)*4;this.events[i]=type;this.events[i+1]=a;this.events[i+2]=b;this.events[i+3]=c;if(this.eventWrite-this.eventRead>64)this.eventRead=this.eventWrite-64;}
  allied(a,b){return alliedTeams(this,a,b);}
@@ -30,7 +31,7 @@ export default class Match {
  setArmour(index){this.players[0].armour=ARMOUR[index]?.points??7;this.players[0].gear.armourTier=ARMOUR[index]?index:1;}
  spectatorTick(){const p=this.players[0].body,input=this.input;p.px=p.x;p.py=p.y;p.pz=p.z;let f=(input.down('KeyW')?1:0)-(input.down('KeyS')?1:0),s=(input.down('KeyD')?1:0)-(input.down('KeyA')?1:0);const l=Math.hypot(f,s);if(l>1){f/=l;s/=l;}p.x+=(Math.cos(p.yaw)*s-Math.sin(p.yaw)*f)/6;p.z+=(-Math.sin(p.yaw)*s-Math.cos(p.yaw)*f)/6;p.y=Math.max(-5,Math.min(65,p.y+((input.down('Space')?1:0)-(input.down('ShiftLeft')||input.down('ShiftRight')?1:0))/6));}
  tick(){this.clock++;if(this.phase==='countdown'){this.input.attackPresses=0;if(--this.countdown<=0){this.phase='active';this.emit(EVENT.START);}return;}if(this.phase==='waiting')return;
-  if(this.phase==='active')this.timeline?.tick();if(this.phase==='active'){this.teamUpgrades.tick();this.botDirector.tick();this.tnt.tick();this.fireballs.tick();}
+  if(this.phase==='active')this.timeline?.tick();if(this.phase==='active'){this.teamUpgrades.tick();this.botDirector.tick();this.tnt.tick();this.fireballs.tick();this.arrows.tick();}
   if(this.phase==='finished'||!this.players[0].alive)this.spectatorTick();
   for(let i=0;i<this.players.length;i++){const s=this.players[i];if(s.hitFlash>0)s.hitFlash--;if(s.hurtTicks>0)s.hurtTicks--;if(s.spawnGuard>0)s.spawnGuard--;if(s.swingTicks>0)s.swingTicks--;s.hitAge++;s.attackAge++;
    if(!s.alive){if(this.phase==='active'&&s.respawnTicks>0&&--s.respawnTicks===0){if(this.beds[s.team])this.respawn(i);else this.finalize(i);}continue;}if(this.phase!=='active')continue;
