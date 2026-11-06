@@ -7,8 +7,9 @@ import { gridKey } from '@/game/botGrid';
 import { TEAMS } from '@/game/map';
 import { BED_SHIFT } from '@/game/bedLayout';
 import { tickBotOrder,buyChatOrder } from '@/game/botChatOrders';
+import { BOT_DIFFICULTIES } from '@/game/botSettings';
 export default class BotBrain {
- constructor(director,index){this.director=director;this.match=director.match;this.index=index;this.player=this.match.players[index];this.difficulty=director.difficulty;this.input=new BotInput();this.nav=new BotNavigation(director.grid);this.action='idle';this.goalX=this.goalZ=999;this.nextThink=index*3;this.placeAt=this.attackAt=0;this.mineX=this.mineY=this.mineZ=-999;this.mineProgress=0;this.mineId=0;this.mineHit={valid:false};this.target=-1;this.enemyTeam=-1;this.trip=0;this.lastGemAt=-9999;this.waitUntil=0;this.aimOffset=0;this.wasAlive=true;this.stuckTicks=0;this.lastX=this.player.body.x;this.lastZ=this.player.body.z;this.lastPlan=0;this.recoverUntil=0;this.lastWorkAt=0;}
+ constructor(director,index){this.director=director;this.match=director.match;this.index=index;this.player=this.match.players[index];this.difficulty=this.player.isEphirisi?BOT_DIFFICULTIES.Hard:director.difficulty;this.input=new BotInput();this.nav=new BotNavigation(director.grid);this.action='idle';this.goalX=this.goalZ=999;this.nextThink=index*3;this.placeAt=this.attackAt=0;this.mineX=this.mineY=this.mineZ=-999;this.mineProgress=0;this.mineId=0;this.mineHit={valid:false};this.target=-1;this.enemyTeam=-1;this.trip=0;this.lastGemAt=-9999;this.waitUntil=0;this.aimOffset=0;this.wasAlive=true;this.stuckTicks=0;this.lastX=this.player.body.x;this.lastZ=this.player.body.z;this.lastPlan=0;this.recoverUntil=0;this.lastWorkAt=0;}
  get building(){return !!this.match.beds[this.player.team]&&(this.director.builders[this.player.team]===this.index||this.chatOrder?.type==='defend')&&!!this.defenceCell();}
  defenceCell(){return nextDefence(this);}
  guardEdges(){guardBotEdges(this);}
