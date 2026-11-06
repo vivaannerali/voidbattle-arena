@@ -1,7 +1,7 @@
 // Roll once when the authoritative match roster is created, never on respawn.
-export default function ephirisiEncounter(roster,mode,allies=[roster[0].team]){
+export default function ephirisiEncounter(roster,mode,allies=[roster[0].team],force=false){
  const roll=Math.random();
- if(roll>=.01||roster.some(p=>p.name.toLowerCase()==='ephirisi'))return;
+ if(!force&&roll>=.01||roster.some(p=>p.name.toLowerCase()==='ephirisi'))return;
  const candidates=roster.filter((p,index)=>index>0&&!p.human&&!allies.includes(p.team));
  let player=candidates[Math.floor(Math.random()*candidates.length)];
  if(!player&&mode){
