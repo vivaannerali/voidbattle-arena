@@ -11,6 +11,7 @@ import cleanPvpItems from '@/game/cleanPvpItems';
 import { drawMapMaterials } from '@/game/mapMaterials';
 import tntTexture from '@/game/tntTexture';
 import fireballTexture from '@/game/fireballTexture';
+import icyPvpTextures from '@/game/icyPvpTextures';
 
 export function createAtlas(style='Clean PvP'){
  const canvas=document.createElement('canvas'); canvas.width=ATLAS_SIZE;canvas.height=ATLAS_SIZE*2;
@@ -34,7 +35,7 @@ export function createAtlas(style='Clean PvP'){
  c.textBaseline='alphabetic';
  const swordColors=['#b38b56','#989f9e','#e4eaeb','#58d9cf'];for(let i=0;i<4;i++){const ox=(26+i)%8*16,oy=Math.floor((26+i)/8)*16;c.clearRect(ox,oy,16,16);c.fillStyle='#705132';for(let p=0;p<4;p++)c.fillRect(ox+2+p,oy+12-p,2,2);c.fillStyle=swordColors[i];for(let p=0;p<8;p++)c.fillRect(ox+6+p,oy+8-p,2,2);c.fillRect(ox+3,oy+8,2,2);c.fillRect(ox+5,oy+10,2,2);c.fillRect(ox+7,oy+12,2,2);}
  const resourceColors=['#d6dce1','#edc84b','#64dce9','#57d68b'];for(let i=0;i<4;i++){const tile=44+i,ox=tile%8*16,oy=Math.floor(tile/8)*16;c.clearRect(ox,oy,16,16);c.fillStyle=resourceColors[i];if(i<2){c.fillRect(ox+2,oy+5,12,7);c.fillStyle=i===0?'#f0f5f6':'#fff0a5';c.fillRect(ox+3,oy+5,10,2);c.fillStyle=i===0?'#858f9b':'#a37c26';c.fillRect(ox+2,oy+11,12,2);}else{for(let y=1;y<15;y++){const half=Math.max(1,6-Math.abs(y-7));c.fillRect(ox+8-half,oy+y,half*2,1);}c.fillStyle=i===2?'#b6f7fb':'#adf5bd';c.fillRect(ox+6,oy+4,2,5);c.fillRect(ox+8,oy+3,2,2);}}drawGlyphs(c);drawShopTiles(c);drawTeamTiles(c);
- drawBlockTextures(c);if(style==='Clean PvP'){cleanPvpBlocks(c);cleanPvpItems(c);}drawMapMaterials(c,style==='Clean PvP');tntTexture(c);fireballTexture(c);const packed=packAtlas(canvas);setSpritePixels(packed.pixels);
+ drawBlockTextures(c);if(style==='Clean PvP'){cleanPvpBlocks(c);cleanPvpItems(c);}drawMapMaterials(c,style==='Clean PvP');if(style==='Clean PvP')icyPvpTextures(c);tntTexture(c);fireballTexture(c);const packed=packAtlas(canvas);setSpritePixels(packed.pixels);
  const texture=new THREE.CanvasTexture(packed.canvas);texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestFilter;texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;
  return {texture,url:canvas.toDataURL(),style};
 }

@@ -9,6 +9,7 @@ import GameClickResume from '@/components/game/GameClickResume';
 import GameChatInput from '@/components/game/GameChatInput';
 import MapLoading from '@/components/game/MapLoading';
 import '@/components/game/gameRefinements.css';
+import '@/components/game/icyPack.css';
 export default function GameSession({game,onQuit,onSettings,onLobby}) {
  const {data,mode}=game,engine=game.engine.current;
  const move=(from,to)=>{if(engine.network?.role==='guest')engine.network.command('move',{from,to});else{engine.interaction.store.move(from,to);engine.publish();}};
@@ -21,5 +22,5 @@ export default function GameSession({game,onQuit,onSettings,onLobby}) {
  else if(mode==='chat')overlay=<GameChatInput onSend={text=>engine.sendChat(text)} onClose={()=>engine.closeGui()}/>;
   else if(mode==='click-resume')overlay=<GameClickResume onResume={game.resume}/>;
  else if(mode!=='playing')overlay=<GamePauseMenu party={!!onLobby} mode={mode} error={game.error} onResume={game.resume} onQuit={onQuit} onSettings={onSettings}/>;
- return <>{data&&<GameHUD data={data} onSlot={slot=>engine?.interaction.select(slot,false)}/>}<div className="game-vignette"/>{overlay}</>;
+ return <div className={data?.textureStyle==='Clean PvP'?'game-pack-icy':'game-pack-classic'}>{data&&<GameHUD data={data} onSlot={slot=>engine?.interaction.select(slot,false)}/>}<div className="game-vignette"/>{overlay}</div>;
 }
