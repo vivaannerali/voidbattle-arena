@@ -1,0 +1,8 @@
+export const UTILITY_ITEMS=[
+ {key:'ender_pearl',name:'Ender Pearl',category:'utility',type:'utility',id:87,tile:139,quantity:1,cost:4,currency:43,description:'Right-click to throw. Teleports you to a clear landing spot on impact, resetting fall distance. Can rescue you from the void.'},
+ {key:'bridge_egg',name:'Bridge Egg',category:'utility',type:'utility',id:88,tile:140,quantity:1,cost:2,currency:43,description:'Right-click to throw. Leaves a three-wide trail of your team wool for up to 32 blocks. Stops on impact; never replaces existing blocks.'},
+ {key:'wind_charge',name:'Wind Charge',category:'utility',type:'utility',id:89,tile:141,quantity:1,cost:40,currency:40,description:'Right-click to throw a short-range wind burst. Launches nearby enemies and yourself without damaging blocks. Self-boosts protect your next landing.'},
+ {key:'popup_tower',name:'Compact Pop-Up Tower',category:'utility',type:'utility',id:90,tile:142,quantity:1,cost:24,currency:40,description:'Right-click a surface to build a five-wide team-wool fort with a doorway, roof and climbing ladder. Respects the build limit and occupied spaces.'},
+ {key:'block_zapper',name:'Block Zapper',category:'utility',type:'zapper',id:91,tile:143,quantity:1,cost:5,currency:41,description:'Right-click to remove up to 9 connected, placed enemy team-coloured blocks within 12 blocks. Three-second cooldown. Cannot remove map terrain, beds or friendly blocks. Lost on death.'}
+];
+export const THROWN_UTILITIES={87:{kind:'pearl',speed:25,gravity:12,life:300},88:{kind:'egg',speed:20,gravity:0,life:96},89:{kind:'wind',speed:26,gravity:0,life:60}};
