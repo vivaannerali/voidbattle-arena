@@ -1,0 +1,2 @@
+import React from 'react';
+export default function GameBotChatSetting({value,onChange}){return <label className="minecraft-select-label">Bot chat:<select aria-label="Bot chat" value={value||'On'} onChange={event=>onChange('botChat',event.target.value)}><option value="On">On</option><option value="Off">Off</option></select></label>;}

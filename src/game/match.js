@@ -3,6 +3,7 @@ import { damageFor,ARMOUR } from '@/game/equipment';
 import botRoster from '@/game/botRoster';
 import { botSettings } from '@/game/botSettings';
 import BotDirector from '@/game/botDirector';
+import LocalBotChat from '@/game/localBotChat';
 import { diePlayer,respawnPlayer,destroyTeamBed,finalizePlayer } from '@/game/matchLifecycle';
 import TeamUpgrades from '@/game/teamUpgrades';
 import voxelRaycast from '@/game/voxelRaycast';
@@ -15,9 +16,9 @@ export default class Match {
  constructor(world,player,input,interaction,fireworks,options={}){this.world=world;this.input=input;this.interaction=interaction;this.fireworks=fireworks;this.beds=interaction.beds;this.phase='waiting';this.countdown=300;this.clock=0;this.winner=-1;this.endAt=0;this.resultReady=false;this.localOut=false;this.finishedByTime=false;this.eliminated=new Uint8Array(this.beds.length);this.events=new Int16Array(256);this.eventRead=0;this.eventWrite=0;this.aimingAtEnemy=false;this.lineHit={valid:false};this.ray=new THREE.Ray();this.box=new THREE.Box3();this.point=new THREE.Vector3();this.settings=botSettings(options);this.players=botRoster(world,player,interaction,this.settings);this.players[0].interaction=interaction;
 
   for(let t=0;t<this.beds.length;t++)if(!this.players.some(s=>s.team===t)){this.beds[t]=0;this.eliminated[t]=1;}
-  this.teamUpgrades=new TeamUpgrades(this);this.botDirector=new BotDirector(this);
+  this.teamUpgrades=new TeamUpgrades(this);this.botDirector=new BotDirector(this);this.chat=new LocalBotChat(this);
  }
- emit(type,a=0,b=0,c=0){const i=(this.eventWrite++%64)*4;this.events[i]=type;this.events[i+1]=a;this.events[i+2]=b;this.events[i+3]=c;if(this.eventWrite-this.eventRead>64)this.eventRead=this.eventWrite-64;}
+ emit(type,a=0,b=0,c=0){this.chat?.event(type,a,b);const i=(this.eventWrite++%64)*4;this.events[i]=type;this.events[i+1]=a;this.events[i+2]=b;this.events[i+3]=c;if(this.eventWrite-this.eventRead>64)this.eventRead=this.eventWrite-64;}
  allied(a,b){return alliedTeams(this,a,b);}
  checkVictory(){checkPartyVictory(this);}
  begin(){if(this.settings.partyRoster)return;if(this.phase==='waiting'){this.phase='countdown';this.countdown=300;}}
@@ -32,7 +33,7 @@ export default class Match {
    const p=s.body;p.tick(i===0?this.input:s.control||s.bot?.input||IDLE);if(p.fallDamage>0){s.health=Math.max(0,s.health-this.teamUpgrades.fallDamage(i,p.fallDamage));p.fallDamage=0;s.hitFlash=10;s.hitAge=s.regen=0;if(s.health<=0){this.die(i,s.attackAge<600?s.lastAttacker:-1);continue;}}if(p.y< -20){this.die(i,s.attackAge<600?s.lastAttacker:-1);continue;}if(s.hitAge>360&&s.health<20&&++s.regen>=80){s.health=Math.min(20,s.health+1);s.regen=0;}
 
   }
-  if(this.phase==='active')this.generators?.tick();
+  if(this.phase==='active')this.generators?.tick();this.chat.tick();
   if(this.endAt&&this.clock>=this.endAt)this.resultReady=true;
   if(this.endAt&&this.clock%45===0){const p=this.players[0].body;this.fireworks.burst(p.x+(Math.random()-.5)*12,p.y+5+Math.random()*5,p.z-5+(Math.random()-.5)*10);}this.fireworks.tick();
  }
