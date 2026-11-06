@@ -1,0 +1,9 @@
+import React from 'react';
+import { Image } from '@/components/ui/image';
+import { findMap,mapsForMode } from '@/game/mapCatalog';
+import mapPreview from '@/game/mapPreview';
+import '@/components/game/mapSelection.css';
+export default function PartyMapOptions({state,locked,onChange}){
+ const s=state.settings,map=findMap(state.selectedMapId||(!s.mapVoting?s.mapId:null));
+ return <div className="party-map-options"><label>Map<select aria-label="Map selection" value={s.mapId||'random'} disabled={locked||s.mapVoting} onChange={event=>onChange({mapId:event.target.value})}><option value="random">Random</option>{mapsForMode(s.teamMode).map(map=><option key={map.mapId} value={map.mapId}>{map.name}{map.tag?' · '+map.tag:''}</option>)}</select></label><label className="party-toggle"><input type="checkbox" checked={!!s.mapVoting} disabled={locked} onChange={event=>onChange({mapVoting:event.target.checked})}/>Map Voting · 3 maps · 15 seconds</label>{map?<figure className="party-map-preview"><Image src={mapPreview(map.mapId)} alt={map.name+' original '+map.teams+'-team arena preview'} fittingType="fit" className="party-map-picture"/><figcaption><strong>{map.name}</strong><span>{map.tag||'Original layout'} · {map.teams} teams</span><p>{map.description}</p></figcaption></figure>:<p className="party-help">{s.mapVoting?'Everyone votes after the host presses Start. Ties and abstentions are resolved randomly.':'A random compatible map is chosen when the host starts.'}</p>}<p className="party-help">{mapsForMode(s.teamMode)[0].teams}-team layouts only · Original builds inspired by each theme.</p></div>;
+}

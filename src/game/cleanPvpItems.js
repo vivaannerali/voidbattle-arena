@@ -1,3 +1,4 @@
+import drawUpgradeTiles from '@/game/upgradeAtlas';
 const TIER=['#df9e52','#9da6b6','#f3fbff','#26e8ed'],OUTLINE='#161d30';
 function sprite(c,tile,draw){const pixels=new Map(),put=(x,y,color)=>{if(x>=1&&x<=14&&y>=1&&y<=14)pixels.set(y*16+x,color);},rect=(x,y,w,h,color)=>{for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++)put(x+dx,y+dy,color);};draw(rect,put);const ox=tile%8*16,oy=(tile/8|0)*16;c.clearRect(ox,oy,16,16);c.fillStyle=OUTLINE;for(const key of pixels.keys()){const x=key%16,y=key/16|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])c.fillRect(ox+x+dx,oy+y+dy,1,1);}for(const [key,color] of pixels){c.fillStyle=color;c.fillRect(ox+key%16,oy+(key/16|0),1,1);}}
 function outlineExisting(c,tile){const ox=tile%8*16,oy=(tile/8|0)*16,data=c.getImageData(ox,oy,16,16),pixels=data.data;c.fillStyle=OUTLINE;for(let y=0;y<16;y++)for(let x=0;x<16;x++){if(pixels[(y*16+x)*4+3]<100)continue;for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]){const nx=x+dx,ny=y+dy;if(nx>=0&&nx<16&&ny>=0&&ny<16&&pixels[(ny*16+nx)*4+3]<100)c.fillRect(ox+nx,oy+ny,1,1);}}const temp=document.createElement('canvas');temp.width=temp.height=16;temp.getContext('2d').putImageData(data,0,0);c.drawImage(temp,ox,oy);}
@@ -8,5 +9,5 @@ export default function cleanPvpItems(c){
  sprite(c,78,r=>{for(let n=0;n<6;n++){r(4+n,3+n,2,2,'#f3fbff');r(11-n,3+n,2,2,'#d5e7f6');}r(3,10,3,3,'#8898b1');r(10,10,3,3,'#8898b1');});
  for(let i=0;i<4;i++)sprite(c,44+i,r=>{const color=['#f3fbff','#ffdc2c','#26e8ed','#32f47a'][i];if(i<2){r(3,6,10,5,color);r(4,5,8,1,color);r(4,6,8,1,'#ffffeb');r(3,10,10,1,i?'#d3951e':'#9da6b6');}else{for(let y=2;y<14;y++){const half=Math.min(5,6-Math.abs(7-y));r(8-half,y,half*2,1,color);}r(5,5,2,4,'#dfffff');r(8,3,2,2,'#ffffff');}});
  for(let i=0;i<3;i++)sprite(c,79+i,r=>{const color=[TIER[1],TIER[2],TIER[3]][i];r(3,3,3,4,color);r(10,3,3,4,color);r(5,5,6,8,color);r(7,5,2,2,OUTLINE);r(5,8,1,4,'#ffffff');});
- for(const tile of [82,83,84,85,86,87,88,89,90,91,123])outlineExisting(c,tile);
+ for(const tile of [83,84,85,86,87,88,89,90,91,123])c.clearRect(tile%8*16,(tile/8|0)*16,16,16);drawUpgradeTiles(c);for(const tile of [82,83,84,85,86,87,88,89,90,91,123])outlineExisting(c,tile);
 }

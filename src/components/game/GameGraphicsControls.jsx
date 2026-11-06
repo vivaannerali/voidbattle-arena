@@ -1,6 +1,7 @@
 import React from 'react';
 const OPTIONS=[
- {key:'graphics',label:'Graphics',values:['Fancy','Fast']},
+  {key:'textureStyle',label:'Texture Style',values:['Clean PvP','Classic']},
+  {key:'graphics',label:'Graphics',values:['Fancy','Fast']},
  {key:'particles',label:'Particles',values:['All','Decreased','Minimal']},
  {key:'clouds',label:'Clouds',values:['On','Off']},
  {key:'viewBobbing',label:'View bobbing',values:['On','Off']}

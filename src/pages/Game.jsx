@@ -13,7 +13,7 @@ import '@/components/game/party.css';
 
 export default function Game(){
  const [profile,setProfile]=useState(readGameProfile),[name,setName]=useState(profile.username),[code,setCode]=useState(''),[screen,setScreen]=useState('start'),game=useSoloGame(),textures=useMemo(partyTextures,[]);
- const party=usePartySession({state:state=>{setCode(state.code);if(state.phase==='lobby'||state.phase==='countdown')setScreen(current=>current==='settings'?current:'lobby');},game:(options,connection)=>{setScreen('game');game.start({...profile,...options,attachNetwork:engine=>options.networkRole==='host'?new HostPartyGame(engine,connection):new GuestPartyGame(engine,connection)});},packet:(packet,id)=>game.engine.current?.network?.receive(packet,id),lobby:()=>{game.quit();setScreen('lobby');},exit:()=>{game.quit();setScreen('start');}});
+ const party=usePartySession({state:state=>{setCode(state.code);if(state.phase==='lobby'||state.phase==='countdown'||state.phase==='voting')setScreen(current=>current==='settings'?current:'lobby');},game:(options,connection)=>{setScreen('game');game.start({...profile,...options,attachNetwork:engine=>options.networkRole==='host'?new HostPartyGame(engine,connection):new GuestPartyGame(engine,connection)});},packet:(packet,id)=>game.engine.current?.network?.receive(packet,id),lobby:()=>{game.quit();setScreen('lobby');},exit:()=>{game.quit();setScreen('start');}});
  useEffect(()=>{document.title='Void Wars | Party Bed Wars';},[]);
  const changeName=value=>{setName(value);if(validUsername(value)){try{setProfile(saveGameProfile({...profile,username:value}));}catch(error){party.setError(error.message);}}};
  const back=()=>{setScreen(game.engine.current?'game':party.state?'lobby':'start');game.engine.current?.closeGui();};

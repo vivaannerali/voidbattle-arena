@@ -7,12 +7,14 @@ import GameTeamUpgrades from '@/components/game/GameTeamUpgrades';
 import GamePauseMenu from '@/components/game/GamePauseMenu';
 import GameClickResume from '@/components/game/GameClickResume';
 import GameChatInput from '@/components/game/GameChatInput';
+import MapLoading from '@/components/game/MapLoading';
 import '@/components/game/gameRefinements.css';
 export default function GameSession({game,onQuit,onSettings,onLobby}) {
  const {data,mode}=game,engine=game.engine.current;
  const move=(from,to)=>{if(engine.network?.role==='guest')engine.network.command('move',{from,to});else{engine.interaction.store.move(from,to);engine.publish();}};
  let overlay=null;
- if(mode==='results'&&data)overlay=<GameResults data={data} onAgain={onLobby||game.again} onSpectate={game.resume} onQuit={onQuit}/>;
+ if(mode==='loading')overlay=<MapLoading map={game.loadingMap}/>;
+  else if(mode==='results'&&data)overlay=<GameResults data={data} onAgain={onLobby||game.again} onSpectate={game.resume} onQuit={onQuit}/>;
  else if(mode==='upgrades'&&data)overlay=<GameTeamUpgrades data={data} onBuy={key=>engine.buyUpgrade(key)} onMove={move} onClose={()=>engine.closeGui()}/>;
  else if(mode==='shop'&&data)overlay=<GameShop data={data} onBuy={(key,shift)=>engine.buyItem(key,shift)} onMove={move} onClose={()=>engine.closeGui()}/>;
  else if(mode==='inventory'&&data)overlay=<GameInventory data={data} onMove={move} onClose={()=>engine.toggleInventory()}/>;

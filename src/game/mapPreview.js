@@ -1,0 +1,8 @@
+import { findMap,mapLayout } from '@/game/mapCatalog';
+import buildArena from '@/game/buildArena';
+import { MAP_MATERIALS } from '@/game/mapMaterials';
+import { CLEAN_TEAM } from '@/game/cleanPvpBlocks';
+const cache=new Map(),colors={1:'#69bc4d',2:'#98734c',3:'#939da8',4:CLEAN_TEAM[0],5:CLEAN_TEAM[1],6:CLEAN_TEAM[2],7:CLEAN_TEAM[3],8:CLEAN_TEAM[5],13:'#eee3a5',14:'#c9975b',15:'#302241',16:'#b9eeee',17:'#ff5865',18:'#fff4dc',27:CLEAN_TEAM[4],28:CLEAN_TEAM[6],29:CLEAN_TEAM[7]};for(const [,id,,color] of MAP_MATERIALS)colors[id]=color;
+export default function mapPreview(id){if(cache.has(id))return cache.get(id);const map=findMap(id);if(!map)return '';const columns=new Map(),key=(x,z)=>x+','+z,w={get(x,y,z){return columns.get(key(x,z))?.[y]||0;},set(x,y,z,id){if(y<0||y>=64)return;const k=key(x,z);let column=columns.get(k);if(!column){if(!id)return;column=new Uint8Array(64);columns.set(k,column);}column[y]=id;}};buildArena(w,mapLayout(map));const canvas=document.createElement('canvas');canvas.width=360;canvas.height=210;const c=canvas.getContext('2d');c.fillStyle='#15243b';c.fillRect(0,0,360,210);const scale=360/(map.radius*4+55),tops=[...columns].map(([key,col])=>{const [x,z]=key.split(',').map(Number);let y=63;while(y>=0&&!col[y])y--;return {x,z,y,id:col[y]};}).filter(p=>p.y>=0).sort((a,b)=>a.x+a.z-b.x-b.z||a.y-b.y);
+ for(const p of tops){const x=180+(p.x-p.z)*scale,y=110+(p.x+p.z)*scale*.48-(p.y-16)*scale;c.fillStyle=colors[p.id]||map.colors[0];c.beginPath();c.moveTo(x,y);c.lineTo(x+scale,y+scale*.48);c.lineTo(x,y+scale*.96);c.lineTo(x-scale,y+scale*.48);c.closePath();c.fill();if(p.y>17){c.fillStyle='#00000022';c.fillRect(x,y+scale*.65,scale*.65,scale*.6);}}
+ const url=canvas.toDataURL('image/png');cache.set(id,url);return url;}

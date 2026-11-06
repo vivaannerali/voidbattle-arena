@@ -5,5 +5,5 @@ export default function Amazon(g,l){const {fill,ball,path,local}=g;
  for(const [x,z] of [[-11,-10],[11,-10],[-11,10],[11,10]])tree(x,z,6);
  for(const [x,z] of l.diamonds){path(x,z,0,Math.sign(z)*7,1,M.MOSS);tree(x+3,z+2,4);}
  for(const t of l.teams){const put=local(t),s=Math.round(Math.sin(t.rotation)),c=Math.round(Math.cos(t.rotation));tree(t.x+10*s,t.z+10*c,6);for(let x=-6;x<=6;x++)for(let z=4;z<=9;z++)put(x,23,z,M.LEAVES);for(const x of [-6,6])for(let y=17;y<23;y++)put(x,y,8,M.LOG);}
- for(const [ax,az,bx,bz] of [[-11,-10,11,-10],[-11,10,11,10],[-11,-10,-11,10],[11,-10,11,10]])path(ax,az,bx,bz,1,M.LOG,27);
+ fill(-2,17,-2,2,30,2,M.LOG);ball(0,32,0,9,4,9,M.LEAVES);for(const [x,z] of [[-11,-10],[11,-10],[-11,10],[11,10]])path(0,0,x,z,1,M.LOG,27);for(const [ax,az,bx,bz] of [[-11,-10,11,-10],[-11,10,11,10],[-11,-10,-11,10],[11,-10,11,10]])path(ax,az,bx,bz,1,M.LOG,27);
 }

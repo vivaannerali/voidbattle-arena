@@ -1,0 +1,3 @@
+import { createAtlas } from '@/game/atlas';
+import { refreshSpriteGeometries } from '@/game/pixelSpriteGeometry';
+export default function textureStyle(engine,style){const nextStyle=style==='Classic'?'Classic':'Clean PvP';if(engine.atlas.style===nextStyle)return;const next=createAtlas(nextStyle);engine.atlas.texture.image=next.texture.image;engine.atlas.texture.needsUpdate=true;engine.atlas.url=next.url;engine.atlas.style=nextStyle;next.texture.dispose();refreshSpriteGeometries();}

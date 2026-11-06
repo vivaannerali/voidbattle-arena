@@ -17,12 +17,12 @@ export const MAPS=MAP_THEMES.flatMap(theme=>[8,4].map(teams=>({...theme,teams,ma
 export const mapsForMode=mode=>MAPS.filter(map=>map.teams===(TEAM_MODES[mode]||TEAM_MODES.Solos).teams);
 export const findMap=id=>MAPS.find(map=>map.mapId===id);
 const choose=items=>items[crypto.getRandomValues(new Uint32Array(1))[0]%items.length];
-export function resolveMap(id,mode='Solos'){const maps=mapsForMode(mode);return maps.find(map=>map.mapId===id)||choose(maps.filter(map=>map.id!=='classic'));}
-export function voteCandidates(mode){const pool=mapsForMode(mode).filter(map=>map.id!=='classic'),result=[];while(result.length<3){const map=choose(pool);result.push(map.mapId);pool.splice(pool.indexOf(map),1);}return result;}
+export function resolveMap(id,mode='Solos'){const maps=mapsForMode(mode);return maps.find(map=>map.mapId===id)||choose(maps);}
+export function voteCandidates(mode){const pool=mapsForMode(mode),result=[];while(result.length<3){const map=choose(pool);result.push(map.mapId);pool.splice(pool.indexOf(map),1);}return result;}
 export function mapLayout(map){const mode=map.teams===8?'Solos':'Squads',classic=map.id==='classic',scale=map.radius/(map.teams===8?58:51);let bases=(map.teams===8?EIGHT_BASES:FOUR_BASES).map(([x,z,r])=>[Math.round(x*scale),Math.round(z*scale),r]);
  if(map.id==='gelato'&&map.teams===8)bases=[[-19,46,0],[20,46,0],[-46,20,-Math.PI/2],[-46,-19,-Math.PI/2],[20,-46,Math.PI],[-19,-46,Math.PI],[46,-19,Math.PI/2],[46,20,Math.PI/2]];
  const diamonds=(map.teams===8?EIGHT_DIAMONDS:FOUR_DIAMONDS).map(([x,z])=>[Math.round(x*scale),Math.round(z*scale)]);
  if(map.id==='gelato')diamonds.splice(0,diamonds.length,...(map.teams===8?[[0,28],[-28,28],[-28,0],[-28,-28],[0,-28],[28,-28],[28,0],[28,28]]:[[-27,27],[-27,-27],[27,-27],[27,27]]));
  if(classic){bases=map.teams===8?EIGHT_BASES:FOUR_BASES;diamonds.splice(0,diamonds.length,...(map.teams===8?EIGHT_DIAMONDS:FOUR_DIAMONDS));}
- return {map,mode,teams:bases.map(([x,z,rotation],i)=>({...TEAM_DEFINITIONS[i],x,z,rotation})),diamonds,emeralds:map.id==='orbit'?[[0,-14],[0,14]]:[[0,-7],[0,7]]};
+ return {map,mode,teams:bases.map(([x,z,rotation],i)=>({...TEAM_DEFINITIONS[i],teamIndex:i,x,z,rotation})),diamonds,emeralds:map.id==='orbit'?[[0,-14],[0,14]]:[[0,-7],[0,7]]};
 }
