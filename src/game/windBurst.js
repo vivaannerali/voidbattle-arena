@@ -6,5 +6,9 @@ export default function windBurst(match,charge){
   const power=1-distance/3.5,length=Math.hypot(dx,dz)||1;p.knockX+=dx/length*10*power;p.knockZ+=dz/length*10*power;p.vy=Math.max(p.vy,5+11*power);p.grounded=false;p.fallDistance=p.fallDamage=0;
   if(self)s.windLanding=true;else{s.lastAttacker=charge.source;s.attackAge=0;}
  }
+ for(const c of match.companions?.entries.values()||[]){
+  if(match.allied(c.team,owner.team))continue;const p=c.body,dx=p.x-charge.x,dz=p.z-charge.z,distance=Math.hypot(dx,p.y+p.height*.5-charge.y,dz);if(distance>3.5)continue;
+  const force=(1-distance/3.5)*(c.kind===95?.35:1),length=Math.hypot(dx,dz)||1;p.knockX+=dx/length*10*force;p.knockZ+=dz/length*10*force;p.vy=Math.max(p.vy,8*force);p.grounded=false;
+ }
  match.fireworks.burst(charge.x,charge.y,charge.z);
 }

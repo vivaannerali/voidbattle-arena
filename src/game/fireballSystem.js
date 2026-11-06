@@ -23,7 +23,8 @@ export default class FireballSystem {
    const t=Math.max(0,Math.min(1,((p.x-b.x)*dx+(p.y+.9-b.y)*dy+(p.z-b.z)*dz)/(step*step)));
    if(Math.hypot(p.x-b.x-dx*t,p.y+.9-b.y-dy*t,p.z-b.z-dz*t)<.65)distance=Math.min(distance,t*step);
   }
-  const travel=Number.isFinite(distance)?Math.max(0,distance-.03):step;b.x+=dx/step*travel;b.y+=dy/step*travel;b.z+=dz/step*travel;
+  this.ray.origin.set(b.x,b.y,b.z);this.ray.direction.set(dx/step,dy/step,dz/step);const companion=this.match.companions.rayHit(this.ray,Math.min(distance,step+.001),this.match.players[b.source].team);if(companion)distance=Math.min(distance,companion.distance);
+   const travel=Number.isFinite(distance)?Math.max(0,distance-.03):step;b.x+=dx/step*travel;b.y+=dy/step*travel;b.z+=dz/step*travel;
   if(Number.isFinite(distance))this.explode(b);else if(this.match.clock>=b.due)this.remove(b);
  }}
  render(alpha){for(const b of this.entries.values()){const age=this.remote?Math.min(.15,(performance.now()-b.receivedAt)/1000):0;
