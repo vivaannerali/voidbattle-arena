@@ -17,6 +17,6 @@ export function mineEnemyBed(bot,team){
  if(!hit.valid||!bed(hit.id)&&!m.world.editable(hit.x,hit.y,hit.z)||bed(hit.id)&&teamAtBed(hit.x,hit.z)!==team)return false;
  const {x,y,z,id}=hit;if(x!==bot.mineX||y!==bot.mineY||z!==bot.mineZ||id!==bot.mineId){bot.mineX=x;bot.mineY=y;bot.mineZ=z;bot.mineId=id;bot.mineProgress=0;}
  const gear=bot.player.gear,tool=isWool(id)&&gear.shears?58:id===B.OAK&&gear.axeTier>=0?54+gear.axeTier:gear.pickaxeTier>=0?50+gear.pickaxeTier:32;
- bot.mineProgress+=m.teamUpgrades.miningRate(bot.index)/(60*miningSeconds(id,tool));p.yaw=Math.atan2(-dx,-dz);p.pitch=Math.atan2(dy,Math.hypot(dx,dz));bot.player.swingTicks=12;
+ bot.player.heldTool=tool;bot.mineProgress+=m.teamUpgrades.miningRate(bot.index)/(60*miningSeconds(id,tool));p.yaw=Math.atan2(-dx,-dz);p.pitch=Math.atan2(dy,Math.hypot(dx,dz));bot.player.swingTicks=12;
  if(bot.mineProgress>=1){if(bed(id))m.destroyBed(team,bot.index);else{m.world.set(x,y,z,0);bot.player.inventory.add(id,1);}bot.mineProgress=0;}return true;
 }

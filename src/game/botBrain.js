@@ -1,5 +1,6 @@
 import BotNavigation from '@/game/botNavigation';
 import attemptClutch from '@/game/botRecovery';
+import { avoidBotTnt,tryBotTnt } from '@/game/botUtilities';
 import { BotInput,guardBotEdges,followBotPath } from '@/game/botMotion';
 import { nearestEnemy,botCombat } from '@/game/botCombat';
 import { nextDefence,buildDefence,mineEnemyBed } from '@/game/botConstruction';
@@ -17,7 +18,7 @@ export default class BotBrain {
  atGoal(radius=.85){return Math.hypot(this.player.body.x-this.goalX,this.player.body.z-this.goalZ)<radius;}
  recover(){this.nav.cancel();this.mineProgress=0;this.stuckTicks=0;this.trip++;this.recoverUntil=this.match.clock+90;const p=this.player.body,grid=this.director.grid;for(let n=0;n<4;n++){const d=(n+this.trip)%4,x=Math.floor(p.x)+(d===0?2:d===1?-2:0),z=Math.floor(p.z)+(d===2?2:d===3?-2:0);if(x< -68||x>68||z< -68||z>68||grid.height(gridKey(x,z))<=0)continue;this.go('recover',x+.5,z+.5);return;}this.action='idle';}
  buildGoal(){const cell=this.defenceCell();if(!cell)return;const p=this.player.body;let bx=cell.x+.5,bz=cell.z+.5,best=Infinity;for(let n=0;n<4;n++){const d=(n+this.trip)%4,x=cell.x+(d===0?2:d===1?-2:0),z=cell.z+(d===2?2:d===3?-2:0),height=this.director.grid.height(gridKey(x,z));if(height<=0||height>19)continue;const distance=Math.hypot(p.x-x-.5,p.z-z-.5);if(distance<best){best=distance;bx=x+.5;bz=z+.5;}}this.go('build',bx,bz);}
- think(){const m=this.match,p=this.player,body=p.body,eco=this.director.economy,home=this.director.baseCenters[p.team],atHome=Math.hypot(body.x-home.x,body.z-home.z)<11;this.aimOffset=(Math.random()-.5)*2*this.difficulty.aim;
+ think(){const m=this.match,p=this.player,body=p.body,eco=this.director.economy,home=this.director.baseCenters[p.team],atHome=Math.hypot(body.x-home.x,body.z-home.z)<11;this.aimOffset=(Math.random()-.5)*2*this.difficulty.aim;if(avoidBotTnt(this))return;
   this.target=nearestEnemy(this,8);if(this.target>=0){const enemy=m.players[this.target].body;if(!m.lineClear(body.x,body.y+1.4,body.z,enemy.x,enemy.y+1,enemy.z))this.target=-1;}
   const threat=m.beds[p.team]?nearestEnemy(this,12,p.team):-1;if(threat>=0&&shouldDefend(this)){const enemy=m.players[threat].body;this.go('defend',enemy.x,enemy.z);if(Math.hypot(enemy.x-body.x,enemy.z-body.z)<8)this.target=threat;return;}if(this.action==='defend')this.action='idle';if(tacticalRetreat(this))return;if(this.target>=0)return;
   if(tickBotOrder(this))return;
@@ -34,8 +35,9 @@ export default class BotBrain {
    if(this.action==='attack'&&(!m.beds[this.enemyTeam]||this.nav.failed))this.action='idle';if(this.action==='hunt'){const enemy=nearestEnemy(this);if(enemy<0)return;this.go('hunt',m.players[enemy].body.x,m.players[enemy].body.z);return;}
   if(this.action==='idle'){this.enemyTeam=this.director.nearestTeam(this);if(this.enemyTeam<0){this.action='hunt';return;}if(strategicResourceTrip(this))return;const point=rushPoint(this);this.go('attack',point.x,point.z);}
  }
- tick(){this.input.clear();const m=this.match,p=this.player;if(!p.alive){this.wasAlive=false;this.nav.cancel();return;}if(!this.wasAlive){this.wasAlive=true;this.action='idle';this.nextThink=0;this.lastX=p.body.x;this.lastZ=p.body.z;this.stuckTicks=0;this.waitUntil=0;}attemptClutch(this);if(m.clock>=this.nextThink){this.nextThink=m.clock+this.difficulty.reaction;this.think();}let working=false;
-  if(this.target>=0&&botCombat(this,this.target))working=true;
+ tick(){this.input.clear();const m=this.match,p=this.player;if(!p.alive){this.wasAlive=false;this.nav.cancel();return;}if(!this.wasAlive){this.wasAlive=true;this.action='idle';this.nextThink=0;this.lastX=p.body.x;this.lastZ=p.body.z;this.stuckTicks=0;this.waitUntil=0;}attemptClutch(this);if(m.clock>=this.nextThink){this.nextThink=m.clock+this.difficulty.reaction;this.think();}p.heldTool=p.sword;let working=false;
+  if(tryBotTnt(this))working=true;
+  else if(this.target>=0&&botCombat(this,this.target))working=true;
   else if(this.action==='chat-shop'&&this.atGoal(1.2)){if(m.clock>=this.placeAt){this.placeAt=m.clock+this.difficulty.reaction;buyChatOrder(this);}working=true;}
   else if(this.action==='shop'&&this.atGoal(1.2)){if(m.clock>=this.placeAt){this.placeAt=m.clock+this.difficulty.reaction;if(!this.director.economy.buy(this)){this.action='idle';this.nextThink=0;}}working=true;}
   else if(this.action==='upgrade'&&this.atGoal(1.2)){const key=this.director.economy.upgradeKey(this);if(key&&m.interaction.upgradesNPCs.inReach(p.body,p.team))m.teamUpgrades.purchase(this.index,key);this.action='idle';this.nextThink=m.clock+this.difficulty.reaction;working=true;}
