@@ -1,10 +1,10 @@
 import { B,bed,isGlass } from '@/game/blocks';
 export function blastShielded(world,x,y,z,tx,ty,tz){const dx=tx-x,dy=ty-y,dz=tz-z,steps=Math.ceil(Math.hypot(dx,dy,dz)*4);for(let n=0;n<steps;n++){const f=n/steps,id=world.get(Math.floor(x+dx*f),Math.floor(y+dy*f),Math.floor(z+dz*f));if(isGlass(id)||id===B.OBSIDIAN)return true;}return false;}
-export default function tntBlast(match,bomb){
+export default function tntBlast(match,bomb,{radius=2.8,breakable=()=>true}={}){
  const {x,y,z,source}=bomb,w=match.world,edits=[];
  for(let dx=-3;dx<=3;dx++)for(let dy=-3;dy<=3;dy++)for(let dz=-3;dz<=3;dz++){
   const bx=Math.floor(x)+dx,by=Math.floor(y)+dy,bz=Math.floor(z)+dz,id=w.get(bx,by,bz);
-  if(!id||bed(id)||isGlass(id)||id===B.OBSIDIAN||!w.editable(bx,by,bz)||Math.hypot(bx+.5-x,by+.5-y,bz+.5-z)>2.8||blastShielded(w,x,y,z,bx+.5,by+.5,bz+.5))continue;
+  if(!id||bed(id)||isGlass(id)||id===B.OBSIDIAN||!breakable(id)||!w.editable(bx,by,bz)||Math.hypot(bx+.5-x,by+.5-y,bz+.5-z)>radius||blastShielded(w,x,y,z,bx+.5,by+.5,bz+.5))continue;
   edits.push([bx,by,bz]);
  }
  for(let i=0;i<match.players.length;i++){

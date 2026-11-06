@@ -3,7 +3,7 @@ import { BED_FOOT_Z } from '@/game/bedLayout';
 import { bed } from '@/game/blocks';
 import { gridKey } from '@/game/botGrid';
 import voxelRaycast from '@/game/voxelRaycast';
-export function botUtilityKey(bot){const i=bot.player.inventory;if(bot.index%3===0&&i.total(74)<1)return 'tnt';if(bot.index%3===1&&!i.total(36))return 'knockback_stick';return null;}
+export function botUtilityKey(bot){const i=bot.player.inventory;if(bot.index%3===0&&i.total(74)<1)return 'tnt';if(bot.index%3===1&&!i.total(36))return 'knockback_stick';if(bot.index%3===2&&!i.total(75))return 'fireball';return null;}
 export function avoidBotTnt(bot){const p=bot.player.body;for(const b of bot.match.tnt.entries.values()){
  if(Math.hypot(p.x-b.x,p.y+.9-b.y,p.z-b.z)>4.8)continue;
  const dx=p.x-b.x,dz=p.z-b.z,length=Math.hypot(dx,dz)||1;

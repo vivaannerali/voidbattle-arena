@@ -20,9 +20,10 @@ export const SHOP_ITEMS=[
  {key:'shears',name:'Permanent Shears',category:'tools',type:'shears',id:58,quantity:1,cost:20,currency:40,description:'Fast wool mining. Kept after death.'},
  {key:'pickaxe',category:'tools',type:'pickaxe',id:50,quantity:1},
  {key:'axe',category:'tools',type:'axe',id:54,quantity:1},
+ {key:'fireball',name:'Fireball',category:'tools',type:'utility',id:75,quantity:1,cost:40,currency:40,description:'Right-click to shoot. Explodes on impact, knocks players back and breaks placed wool, wood and ladders. Does not break beds or blast-proof defenses.'},
  {key:'tnt',name:'TNT',category:'tools',type:'utility',id:74,quantity:1,cost:4,currency:41,description:'Right-click a supported surface. Explodes after 3 seconds. Breaks placed defenses, not beds, obsidian or blast-proof glass.'}
 ];
-export const QUICK_BUY=['wool','stone_sword','iron_sword','chainmail','shears','pickaxe','axe','end_stone','oak','glass','ladder','clay','obsidian','knockback_stick'];
+export const QUICK_BUY=['wool','stone_sword','iron_sword','chainmail','shears','pickaxe','axe','end_stone','oak','glass','ladder','clay','obsidian','knockback_stick','fireball'];
 export const CURRENCY_NAMES={40:'Iron',41:'Gold',42:'Diamond',43:'Emerald'};
 export function resolveOffer(entry,player,mode='Solos'){const offer={...entry,owned:false},gear=player.gear;if(entry.key==='tnt')offer.cost=modePrice(4,8,mode);if(entry.key==='diamond_sword')offer.cost=modePrice(4,3,mode);if(entry.team){const team=TEAMS[player.team];offer.id=entry.key==='wool'?team.wool:entry.key==='clay'?team.clay:team.glass;}
  if(entry.type==='pickaxe'||entry.type==='axe'){const tier=gear[entry.type+'Tier'],next=Math.min(3,tier+1);offer.tier=next;offer.id=entry.id+next;offer.name=(entry.type==='pickaxe'?['Wooden','Iron','Golden','Diamond']:['Wooden','Stone','Iron','Diamond'])[next]+' '+(entry.type==='pickaxe'?'Pickaxe':'Axe');offer.cost=[10,10,3,6][next];offer.currency=next<2?40:41;offer.owned=tier===3;offer.tierLabel=['I','II','III','IV'][next];offer.description=(entry.type==='pickaxe'?['Efficiency I.','Efficiency II.','Efficiency III.','Efficiency III.']:['Efficiency I.','Efficiency I.','Efficiency II.','Efficiency III.'])[next]+' Drops one tier on death, never below Tier I.';}
