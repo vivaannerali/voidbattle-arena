@@ -28,7 +28,7 @@ import textureStyle from '@/game/textureStyle';
 
 export default class Engine {
  constructor(container,onHUD,onMenu,options={}){
-  this.map=configureArena(options.teamMode,options.activeTeams,options.mapId||'random');
+  this.map=configureArena(options.teamMode,options.activeTeams,options.mapId||'random',options.partyRoster||[{username:options.username,human:true}]);
   this.container=container;this.onHUD=onHUD;this.onMenu=onMenu;this.disposed=false;this.debug=false;this.started=false;this.resultsOpen=false;this.resultsReported=false;this.inventoryOpen=false;this.chatOpen=false;this.shopTeam=-1;this.upgradeTeam=-1;this.blindnessActive=false;this.ticks=0;this.fps=0;this.frames=0;this.frameClock=0;this.accumulator=0;this.nextRenderAt=0;this.renderDistance=128;this.last=performance.now();this.time=0;
   this.renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(window.devicePixelRatio,1));this.renderer.outputColorSpace=THREE.SRGBColorSpace;container.appendChild(this.renderer.domElement);
   this.scene=new THREE.Scene();this.scene.background=new THREE.Color('#a3c9e8');this.scene.fog=new THREE.Fog('#a3c9e8',80,170);this.camera=new THREE.PerspectiveCamera(70,1,.06,210);this.camera.rotation.order='YXZ';this.scene.add(this.camera);

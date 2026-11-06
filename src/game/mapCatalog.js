@@ -1,4 +1,5 @@
 import { TEAM_MODES,EIGHT_BASES,FOUR_BASES,EIGHT_DIAMONDS,FOUR_DIAMONDS,TEAM_DEFINITIONS } from '@/game/arenaModes';
+import { canUseMap } from '@/game/mapAccess';
 export const MAP_THEMES=[
  {id:'gelato',name:'Gelato',tag:'Featured Summer',radius:46,mid:16,floor:'PASTEL',description:'Pastel scoops, waffle cones and a compact dessert platter. 20-block direct bridges to mid.',colors:['#ffd4df','#8cebdc','#ddaa6b']},
  {id:'acropolis',name:'Acropolis',radius:56,mid:17,floor:'BRICK',description:'Quartz citadel, high outer terraces and a stepped central temple.',colors:['#f3f2df','#979dac','#cebd91']},
@@ -14,11 +15,11 @@ export const MAP_THEMES=[
  {id:'classic',name:'Classic Arena',radius:58,mid:15,floor:'GRASS',description:'The original arena layout.',colors:['#689b41','#85868a','#b7955f']}
 ];
 export const MAPS=MAP_THEMES.flatMap(theme=>[8,4].map(teams=>({...theme,teams,mapId:theme.id+'-'+teams,modes:teams===8?['Solos','Duos']:['Trios','Squads']})));
-export const mapsForMode=mode=>MAPS.filter(map=>map.teams===(TEAM_MODES[mode]||TEAM_MODES.Solos).teams);
+export const mapsForMode=(mode,players=[])=>MAPS.filter(map=>map.teams===(TEAM_MODES[mode]||TEAM_MODES.Solos).teams&&canUseMap(map,players));
 export const findMap=id=>MAPS.find(map=>map.mapId===id);
 const choose=items=>items[crypto.getRandomValues(new Uint32Array(1))[0]%items.length];
-export function resolveMap(id,mode='Solos'){const maps=mapsForMode(mode);return maps.find(map=>map.mapId===id)||choose(maps);}
-export function voteCandidates(mode){const pool=mapsForMode(mode),result=[];while(result.length<3){const map=choose(pool);result.push(map.mapId);pool.splice(pool.indexOf(map),1);}return result;}
+export function resolveMap(id,mode='Solos',players=[]){const maps=mapsForMode(mode,players);return maps.find(map=>map.mapId===id)||choose(maps);}
+export function voteCandidates(mode,players=[]){const pool=mapsForMode(mode,players),result=[];while(result.length<3){const map=choose(pool);result.push(map.mapId);pool.splice(pool.indexOf(map),1);}return result;}
 export function mapLayout(map){const mode=map.teams===8?'Solos':'Squads',classic=map.id==='classic',scale=map.radius/(map.teams===8?58:51);let bases=(map.teams===8?EIGHT_BASES:FOUR_BASES).map(([x,z,r])=>[Math.round(x*scale),Math.round(z*scale),r]);
  if(map.id==='gelato'&&map.teams===8)bases=[[-19,46,0],[20,46,0],[-46,20,-Math.PI/2],[-46,-19,-Math.PI/2],[20,-46,Math.PI],[-19,-46,Math.PI],[46,-19,Math.PI/2],[46,20,Math.PI/2]];
  const diamonds=(map.teams===8?EIGHT_DIAMONDS:FOUR_DIAMONDS).map(([x,z])=>[Math.round(x*scale),Math.round(z*scale)]);
