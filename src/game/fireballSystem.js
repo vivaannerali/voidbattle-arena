@@ -5,7 +5,7 @@ import { B,isWool,isLadder } from '@/game/blocks';
 export const FIREBALL_ID=75;
 const SPEED=22;
 export default class FireballSystem {
- constructor(match){this.match=match;this.entries=new Map();this.sequence=0;this.hit={valid:false};this.geometry=new THREE.IcosahedronGeometry(.23,1);this.material=new THREE.MeshBasicMaterial({color:0xffa32c});this.remote=false;}
+ constructor(match){this.match=match;this.entries=new Map();this.sequence=0;this.hit={valid:false};this.ray=new THREE.Ray();this.geometry=new THREE.IcosahedronGeometry(.23,1);this.material=new THREE.MeshBasicMaterial({color:0xffa32c});this.remote=false;}
  launch(source,dx,dy,dz){
   const m=this.match,s=m.players[source],length=Math.hypot(dx,dy,dz);
   if(m.phase!=='active'||!s?.alive||!Number.isFinite(length)||length<.001||m.clock<(s.fireballAt||0)||this.entries.size>=24||!s.inventory.spend(FIREBALL_ID,1))return false;

@@ -15,6 +15,7 @@ export default function tntBlast(match,bomb,{radius=2.8,breakable=()=>true}={}){
   if(i!==source){s.lastAttacker=source;s.attackAge=0;}const length=Math.hypot(dx,dz)||1;p.knockX+=dx/length*force*9;p.knockZ+=dz/length*force*9;p.vy=Math.max(p.vy,force*7);p.grounded=false;
   if(s.health<=0)match.die(i,source);
  }
+ for(const c of match.companions?.entries.values()||[]){const p=c.body,distance=Math.hypot(p.x-x,p.y+p.height*.5-y,p.z-z);if(distance<=4.5&&!blastShielded(w,x,y,z,p.x,p.y+p.height*.5,p.z)){const force=1-distance/4.5;match.companions.hurt(c.id,source,2+6*force,force*9,bomb);}}
  for(const [bx,by,bz] of edits)w.set(bx,by,bz,0);
  match.fireworks.burst(x,y,z);
 }

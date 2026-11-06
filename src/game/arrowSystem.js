@@ -19,7 +19,7 @@ export default class ArrowSystem {
   for(const s of this.match.players)if(!s.alive||!s.interaction?.input.active)s.bowTicks=0;
   for(const a of this.entries.values()){
    a.px=a.x;a.py=a.y;a.pz=a.z;const dx=a.vx/60,dy=a.vy/60,dz=a.vz/60,hit=arrowCollision(this,a,dx,dy,dz);
-   if(hit){if(hit.target>=0)arrowDamage(this.match,a,hit.target);this.remove(a);continue;}
+   if(hit){if(hit.companion!==undefined)this.match.companions.hurt(hit.companion,a.source,a.damage,a.punch);else if(hit.target>=0)arrowDamage(this.match,a,hit.target);this.remove(a);continue;}
    a.x+=dx;a.y+=dy;a.z+=dz;a.vy-=16/60;
    if(this.match.clock>=a.due||a.y< -25)this.remove(a);
   }

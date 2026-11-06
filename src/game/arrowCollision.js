@@ -9,5 +9,6 @@ export default function arrowCollision(system,arrow,dx,dy,dz){
   const p=s.body;box.min.set(p.x-.32,p.y,p.z-.32);box.max.set(p.x+.32,p.y+p.height,p.z+.32);
   if(ray.intersectBox(box,point)){const d=ray.origin.distanceTo(point);if(d<=length&&d<distance){distance=d;target=i;}}
  }
+ const companion=m.companions?.rayHit(ray,distance,m.players[arrow.source].team);if(companion&&companion.distance<=length)return {target:-1,companion:companion.id,distance:companion.distance};
  return distance<=length?{target,distance}:null;
 }

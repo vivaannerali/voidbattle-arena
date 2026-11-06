@@ -1,4 +1,4 @@
-export const ATLAS_ROWS=18,TILE_PIXELS=16,TILE_STRIDE=20,ATLAS_WIDTH=160,ATLAS_HEIGHT=ATLAS_ROWS*TILE_STRIDE;
+export const ATLAS_ROWS=19,TILE_PIXELS=16,TILE_STRIDE=20,ATLAS_WIDTH=160,ATLAS_HEIGHT=ATLAS_ROWS*TILE_STRIDE;
 export const atlasPosition=tile=>`${tile%8*100/7}% ${Math.floor(tile/8)*100/(ATLAS_ROWS-1)}%`;
 export const atlasU=(tile,pixel)=>((tile%8)*TILE_STRIDE+2+pixel)/ATLAS_WIDTH;
 export const atlasV=(tile,pixel)=>1-(Math.floor(tile/8)*TILE_STRIDE+2+pixel)/ATLAS_HEIGHT;

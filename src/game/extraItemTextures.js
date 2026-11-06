@@ -1,9 +1,11 @@
 import { EXTRA_ITEMS } from '@/game/extraItems';
 import rangedTextures from '@/game/rangedTextures';
 import utilityTextures from '@/game/utilityTextures';
+import companionTextures from '@/game/companionTextures';
 export default function extraItemTextures(c){
  for(const item of EXTRA_ITEMS){const ox=item.tile%8*16,oy=Math.floor(item.tile/8)*16;
   const r=(color,x,y,w=1,h=1)=>{c.fillStyle=color;c.fillRect(ox+x,oy+y,w,h);};c.clearRect(ox,oy,16,16);
+  if(item.id===94||item.id===95){companionTextures(item.id,r);continue;}
   if(item.id>=87){utilityTextures(item.id,r);continue;}
   if(item.id>=82){rangedTextures(item.id,r);continue;}
   if(item.id===76){for(let n=0;n<8;n++){r('#23344e',3+n,12-n,3,3);r('#b48653',4+n,12-n,1,2);}r('#26354a',7,1,8,7);r('#879fb7',8,2,6,5);r('#d7f0ff',8,2,6,2);r('#54718e',11,5,3,2);r('#c0daeb',7,3,1,3);continue;}
