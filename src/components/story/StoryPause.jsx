@@ -1,0 +1,5 @@
+import React from 'react';
+import { Crown } from 'lucide-react';
+export default function StoryPause({failed,director,onChapters,onQuit}){
+ return <div className="story-modal-backdrop"><section className="minecraft-menu story-modal" role="dialog" aria-modal="true" aria-label={failed?'Try again':'Story paused'}><Crown className="story-crown"/><p className="game-eyebrow">THE YELLOW EMPEROR</p><h2>{failed?'You have fallen...':'STORY PAUSED'}</h2><p className="minecraft-subtitle">{failed?'Try again? Your checkpoint awaits.':'The world stands still. Your empire can wait.'}</p>{!failed&&<button autoFocus className="minecraft-button minecraft-button-primary" onClick={()=>director.resume()}>RESUME</button>}<button autoFocus={failed} className="minecraft-button" onClick={()=>director.retry()}>{failed?'RETRY FROM CHECKPOINT':'RESTART CHECKPOINT'}</button><button className="minecraft-button" onClick={onChapters}>CHAPTER SELECT</button><button className="minecraft-button" onClick={onQuit}>QUIT TO MAIN MENU</button></section></div>;
+}

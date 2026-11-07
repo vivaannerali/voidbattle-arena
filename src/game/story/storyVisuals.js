@@ -1,0 +1,11 @@
+import * as THREE from 'three';
+export default class StoryVisuals {
+ constructor(engine){this.e=engine;const cube=new THREE.BoxGeometry(1,1,1);this.geometry=new THREE.EdgesGeometry(cube);cube.dispose();this.material=new THREE.LineBasicMaterial({color:0xffd45f});this.marker=new THREE.LineSegments(this.geometry,this.material);this.marker.scale.set(1.4,2.6,1.4);engine.scene.add(this.marker);
+  this.crownGeometry=new THREE.BoxGeometry(1,1,1);this.crownMaterial=new THREE.MeshBasicMaterial({color:0xffd45f});this.crown=new THREE.Group();for(const [x,y,width,height] of [[0,0,.3,.06],[-.12,.08,.06,.15],[0,.06,.05,.1],[.12,.08,.06,.15]]){const mesh=new THREE.Mesh(this.crownGeometry,this.crownMaterial);mesh.position.set(x,y,0);mesh.scale.set(width,height,.025);this.crown.add(mesh);}this.crown.position.set(-.65,.2,0);engine.avatars[0].tag.add(this.crown);const tagColors=engine.avatars[0].tag.geometry.attributes.color,gold=new THREE.Color(0xffd45f);for(let i=0;i<tagColors.count;i++)if(tagColors.getX(i)>.1)tagColors.setXYZ(i,gold.r,gold.g,gold.b);tagColors.needsUpdate=true;
+  engine.scene.fog.color.setHex(0x221331);engine.scene.background.setHex(0x221331);engine.sky.material.uniforms.horizon.value.setHex(0x352344);engine.sky.material.uniforms.zenith.value.setHex(0x10091d);engine.sky.material.uniforms.voidColor.value.setHex(0x090511);engine.sky.cloudsEnabled=false;
+  this.projected=new THREE.Vector3();
+ }
+ render(target,time){this.marker.visible=!!target;if(target){this.marker.position.set(target.x,18.5+Math.sin(time*2)*.12,target.z);this.marker.rotation.y=time*.3;}}
+ waypoint(target){if(!target)return null;const e=this.e,v=this.projected.set(target.x,20,target.z).project(e.camera),distance=Math.round(Math.hypot(e.player.x-target.x,e.player.z-target.z));return {x:Math.max(8,Math.min(92,(v.x+1)*50)),y:Math.max(17,Math.min(72,(1-v.y)*50)),behind:v.z>1,distance,label:target.label};}
+ dispose(){this.e.scene.remove(this.marker);this.e.avatars[0].tag.remove(this.crown);this.geometry.dispose();this.material.dispose();this.crownGeometry.dispose();this.crownMaterial.dispose();}
+}

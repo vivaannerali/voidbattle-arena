@@ -1,0 +1,8 @@
+import React from 'react';
+import { Crown } from 'lucide-react';
+import GameHotbar from '@/components/game/GameHotbar';
+import GameMatchOverlay from '@/components/game/GameMatchOverlay';
+export default function StoryGameplayHUD({data,engine}){
+ const story=data.story;
+ return <div className="game-hud story-gameplay-hud"><header className="story-player"><Crown size={21}/><span>EPHIRISI<small>THE YELLOW EMPEROR</small></span></header><div className="story-objective"><small>PROLOGUE · {story.difficulty.toUpperCase()}</small><p>{story.objective}</p></div><div className="story-pause-hint">ESC · PAUSE</div>{story.waypoint&&<div className="story-waypoint" style={{left:story.waypoint.x+'%',top:story.waypoint.y+'%'}}><b>{story.waypoint.behind?'↶':'◇'}</b><span>{story.waypoint.label} · {story.waypoint.distance}m{story.waypoint.behind?' · TURN AROUND':''}</span></div>}{story.hint&&<aside className="story-hint">HINT · {story.hint}</aside>}<div className="game-crosshair"><span/><span/></div><GameHotbar data={data} onSlot={slot=>engine.interaction.select(slot,false)}/><GameMatchOverlay data={{...data,title:null}}/>{data.notice&&<div className="game-notice">{data.notice}</div>}<div className="game-target-name">{data.target}</div>{story.savedRecently&&<div className="story-checkpoint-status" role="status">{story.saved?'CHECKPOINT SAVED':'Checkpoint kept for this session; device storage is unavailable.'}</div>}{data.debug&&<pre className="game-debug">{data.fps} FPS · fixed 60 TPS{ '\n'}{data.chunks} chunks · {data.drawCalls} draws</pre>}</div>;
+}
