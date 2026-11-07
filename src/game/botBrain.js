@@ -3,6 +3,8 @@ import attemptClutch from '@/game/botRecovery';
 import { avoidBotTnt,tryBotTnt } from '@/game/botUtilities';
 import botFireballs from '@/game/botFireballs';
 import botCompanionCombat from '@/game/botCompanionCombat';
+import botConsumables from '@/game/botConsumables';
+import botUtilityTactics from '@/game/botUtilityTactics';
 import { BotInput,guardBotEdges,followBotPath } from '@/game/botMotion';
 import { nearestEnemy,botCombat } from '@/game/botCombat';
 import { nextDefence,buildDefence,mineEnemyBed } from '@/game/botConstruction';
@@ -37,8 +39,9 @@ export default class BotBrain {
    if(this.action==='attack'&&(!m.beds[this.enemyTeam]||this.nav.failed))this.action='idle';if(this.action==='hunt'){const enemy=nearestEnemy(this);if(enemy<0)return;this.go('hunt',m.players[enemy].body.x,m.players[enemy].body.z);return;}
   if(this.action==='idle'){this.enemyTeam=this.director.nearestTeam(this);if(this.enemyTeam<0){this.action='hunt';return;}if(strategicResourceTrip(this))return;const point=rushPoint(this);this.go('attack',point.x,point.z);}
  }
- tick(){this.input.clear();const m=this.match,p=this.player;if(!p.alive){this.wasAlive=false;this.nav.cancel();return;}if(!this.wasAlive){this.wasAlive=true;this.action='idle';this.nextThink=0;this.lastX=p.body.x;this.lastZ=p.body.z;this.stuckTicks=0;this.waitUntil=0;}attemptClutch(this);if(m.clock>=this.nextThink){this.nextThink=m.clock+this.difficulty.reaction;this.think();}p.heldTool=p.sword;let working=false;
-  if(botFireballs(this)||tryBotTnt(this))working=true;
+ tick(){this.input.clear();const m=this.match,p=this.player;if(!p.alive){this.wasAlive=false;this.nav.cancel();return;}if(!this.wasAlive){this.wasAlive=true;this.action='idle';this.nextThink=0;this.lastX=p.body.x;this.lastZ=p.body.z;this.stuckTicks=0;this.waitUntil=0;this.consuming=null;this.bridgeStep=null;}attemptClutch(this);if(m.clock>=this.nextThink){this.nextThink=m.clock+this.difficulty.reaction;this.think();}p.heldTool=p.sword;let working=false;
+  if(avoidBotTnt(this))working=followBotPath(this);
+  else if(botConsumables(this)||botUtilityTactics(this)||botFireballs(this)||tryBotTnt(this))working=true;
   else if(botCompanionCombat(this))working=true;
   else if(this.target>=0&&botCombat(this,this.target))working=true;
   else if(this.action==='chat-shop'&&this.atGoal(1.2)){if(m.clock>=this.placeAt){this.placeAt=m.clock+this.difficulty.reaction;buyChatOrder(this);}working=true;}
