@@ -8,12 +8,20 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Game from '@/pages/Game';
+import About from '@/pages/About';
+import Contact from '@/pages/Contact';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
   // This public, account-free game must not wait for an online account check.
-  if (window.location.pathname === '/') return <Game />;
+  if (['/', '/about', '/contact'].includes(window.location.pathname.replace(/\/$/, '') || '/')) return (
+    <Routes>
+      <Route path="/" element={<Game />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+    </Routes>
+  );
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {

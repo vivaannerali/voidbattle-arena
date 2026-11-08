@@ -1,0 +1,56 @@
+{
+  "name": "ContactMessage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 254
+    },
+    "topic": {
+      "type": "string",
+      "enum": [
+        "Bug report",
+        "Feedback",
+        "General question"
+      ],
+      "enumColors": [
+        "red",
+        "blue",
+        "gray"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 4000
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "topic",
+    "description"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
