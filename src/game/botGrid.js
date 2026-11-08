@@ -4,10 +4,12 @@ export function gridKey(x,z){return (z-NAV_MIN)*NAV_WIDTH+x-NAV_MIN;}
 export function gridX(key){return key%NAV_WIDTH+NAV_MIN;}
 export function gridZ(key){return (key/NAV_WIDTH|0)+NAV_MIN;}
 export default class BotGrid {
- constructor(world){this.world=world;this.heights=new Float32Array(NAV_SIZE);this.stamps=new Int32Array(NAV_SIZE);this.stamps.fill(-1);}
- height(key){if(key<0||key>=NAV_SIZE)return -1;const x=gridX(key),z=gridZ(key),w=this.world,revision=w.columnVersions[(z+256)*512+x+256];if(this.stamps[key]===revision)return this.heights[key];
-  let floor=16;while(floor>=14&&(!w.get(x,floor,z)||isLadder(w.get(x,floor,z))))floor--;if(floor<14)for(let level=17;level<=20;level++)if(w.get(x,level,z)&&!isLadder(w.get(x,level,z))){floor=level;break;}
-  let height=0;if(floor>=14){while(floor<BUILD_HEIGHT&&w.get(x,floor+1,z)&&!isLadder(w.get(x,floor+1,z))&&blockHeight(w.get(x,floor,z))===1)floor++;height=floor+blockHeight(w.get(x,floor,z));for(let y=Math.floor(height+.00001);y<=Math.floor(height+1.8-.00001);y++){const id=w.get(x,y,z);if(id&&!isLadder(id)&&y+blockHeight(id)>height+.00001){height=-1;break;}}}else if(w.get(x,17,z)||w.get(x,18,z))height=-1;
-  this.stamps[key]=revision;this.heights[key]=height;return height;
+ constructor(world){this.world=world;this.heights=new Float32Array(NAV_SIZE);this.references=new Float32Array(NAV_SIZE);this.stamps=new Int32Array(NAV_SIZE);this.stamps.fill(-1);}
+ clearAt(key,height){const x=gridX(key),z=gridZ(key);for(let y=Math.floor(height+.00001);y<=Math.floor(height+1.8-.00001);y++){const id=this.world.get(x,y,z);if(id&&!isLadder(id)&&y+blockHeight(id)>height+.00001)return false;}return true;}
+ height(key,reference=17){if(key<0||key>=NAV_SIZE)return -1;reference=Math.round(reference*100)/100;const x=gridX(key),z=gridZ(key),w=this.world,revision=w.columnVersions[(z+256)*512+x+256];if(this.stamps[key]===revision&&this.references[key]===Math.fround(reference))return this.heights[key];
+  let height=-1,best=Infinity;for(let y=Math.min(BUILD_HEIGHT-1,Math.floor(reference+1));y>=Math.max(0,Math.floor(reference-4));y--){const id=w.get(x,y,z);if(!id||isLadder(id))continue;const top=y+blockHeight(id),delta=top-reference;if(delta>1.001||delta< -3.001||!this.clearAt(key,top))continue;const score=Math.abs(delta)+(delta<0?.15:0);if(score<best){height=top;best=score;}}
+  // Empty, unobstructed columns can be bridged at the incoming route's height.
+  if(height<0&&this.clearAt(key,Math.ceil(reference-.001))&&!w.get(x,Math.ceil(reference-.001)-1,z))height=0;
+  this.stamps[key]=revision;this.references[key]=reference;this.heights[key]=height;return height;
  }
 }
