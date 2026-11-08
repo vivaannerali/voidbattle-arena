@@ -9,5 +9,5 @@ export default function StoryMode({profile,onQuit}){
  const game=useStorySession(profile),[playing,setPlaying]=useState(false);
  const chapters=()=>{game.stop();setPlaying(false);};
  const quit=()=>{game.stop();onQuit();};
- return <main className="game-shell story-mode"><div className="game-canvas" ref={game.mount}/><div className="game-interface" style={{'--game-gui-scale':profile.guiScale/100}}>{playing?<StorySession game={game} onChapters={chapters} onQuit={quit}/>:<StoryChapterSelect onStart={(difficulty,checkpoint)=>{setPlaying(true);game.start(difficulty,checkpoint);}} onQuit={quit}/>}</div></main>;
+ return <main className="game-shell story-mode"><div className="game-canvas" ref={game.mount}/><div className="game-interface" style={{'--game-gui-scale':profile.guiScale/100}}>{playing?<StorySession game={game} onChapters={chapters} onQuit={quit}/>:<StoryChapterSelect onStart={(difficulty,checkpoint,chapter)=>{setPlaying(true);game.start(difficulty,checkpoint,chapter);}} onQuit={quit}/>}</div></main>;
 }

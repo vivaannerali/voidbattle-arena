@@ -6,7 +6,7 @@ export function completeStoryChapter(id,difficulty,seconds,deaths,damage){
  const progress=readStoryProgress(),key=id+':'+difficulty,previous=progress.records[key],stars=damage===0&&deaths===0?3:deaths===0?2:1;
  const achievements=[...new Set([...progress.achievements,...(damage===0&&deaths===0?['Flawless Emperor']:[])])];
  const record={time:Math.min(previous?.time??Infinity,seconds),stars:Math.max(previous?.stars||0,stars)};
- const unlocked=[...new Set([...progress.unlocked,...(id==='prologue'?['chapter1']:[])])];
+ const unlocked=[...new Set([...progress.unlocked,...(id==='prologue'?['chapter1']:id==='chapter1'?['chapter2']:[])])];
  const persisted=saveStoryProgress({records:{...progress.records,[key]:record},unlocked,achievements,checkpoint:null});
  return {stars,achievements,persisted};
 }

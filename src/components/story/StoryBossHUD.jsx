@@ -1,0 +1,7 @@
+import React from 'react';
+import '@/components/story/storyBoss.css';
+export default function StoryBossHUD({boss}){
+ if(!boss)return null;
+ const percent=Math.max(0,Math.min(100,boss.health/boss.maxHealth*100));
+ return <section className="story-boss-hud" aria-label="Chapter boss"><header><strong>{boss.name}</strong><span>{Math.ceil(boss.health)} / {boss.maxHealth}</span></header><div className="story-boss-track" role="progressbar" aria-label={boss.name+' health'} aria-valuemin={0} aria-valuemax={boss.maxHealth} aria-valuenow={Math.ceil(boss.health)}><div className={boss.enraged?'story-boss-fill story-boss-enraged':'story-boss-fill'} style={{width:percent+'%'}}/></div><small>{boss.enraged?'ENRAGED · AKD23 has gained a speed boost':'Defeat the guardian first · AKD23 is shielded'}</small>{boss.bedProgress>0&&<div className="story-bed-warning" role="alert"><strong>AKD23 IS BREAKING YOUR BED · HIT HIM TO INTERRUPT</strong><div className="story-bed-track" role="progressbar" aria-label="Bed breaking" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(boss.bedProgress*100)}><div style={{width:boss.bedProgress*100+'%'}}/></div><small>Your bed cannot break in this chapter.</small></div>}</section>;
+}
