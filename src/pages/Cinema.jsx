@@ -6,7 +6,9 @@ import MovieToolbar from '@/components/cinema/MovieToolbar';
 import SubtitleTrack from '@/components/cinema/SubtitleTrack';
 import HoverTag from '@/components/cinema/HoverTag';
 import SeatPicker from '@/components/cinema/SeatPicker';
+import TheatreVideoLibrary from '@/components/cinema/TheatreVideoLibrary';
 import { DEFAULT_SEAT } from '@/cinema/seatLayout';
+import { MAX_VIDEO_BYTES, formatVideoSize, listTheatreVideos, uploadTheatreVideo } from '@/cinema/theatreVideos';
 import CinemaRuntime from '@/cinema/cinemaRuntime';
 import { createCinemaAudio } from '@/cinema/cinemaAudio';
 import { createNarrator } from '@/cinema/cinemaNarration';
@@ -30,8 +32,13 @@ export default function Cinema() {
   const [pickingSeat, setPickingSeat] = useState(false);
   const [video, setVideo] = useState(null);
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fileInputRef = useRef(null);
+  const uploadInputRef = useRef(null);
   const videoElRef = useRef(null);
   const audioRef = useRef(null);
   const narratorRef = useRef(null);
@@ -155,12 +162,11 @@ export default function Cinema() {
     setVideoPlaying(false);
   }, []);
 
-  const loadVideo = useCallback((file) => {
-    if (!file) return;
+  const startVideo = useCallback((src, local) => {
     stopPlayback();
     const previous = videoElRef.current;
     const element = document.createElement('video');
-    element.src = URL.createObjectURL(file);
+    element.src = src;
     element.loop = true;
     element.playsInline = true;
     element.preload = 'auto';
@@ -169,7 +175,8 @@ export default function Cinema() {
     }, { once: true });
     videoElRef.current = element;
     audioRef.current?.resume();
-    audioRef.current?.attachVideo(element);
+    if (local) audioRef.current?.attachVideo(element);
+    else audioRef.current?.detachVideo();
     setVideo(element);
     setPickingSeat(false);
     setMode('auditorium');
@@ -179,11 +186,61 @@ export default function Cinema() {
       if (aliveRef.current) setVideoPlaying(false);
     });
     if (previous) {
-      const source = previous.src;
+      const oldSource = previous.src;
       previous.pause();
-      if (source.startsWith('blob:')) URL.revokeObjectURL(source);
+      if (oldSource.startsWith('blob:')) URL.revokeObjectURL(oldSource);
     }
   }, [flash, stopPlayback]);
+
+  const loadVideo = useCallback((file) => {
+    if (!file) return;
+    startVideo(URL.createObjectURL(file), true);
+  }, [startVideo]);
+
+  const playLibraryVideo = useCallback((record) => {
+    if (!record?.file_url) return;
+    startVideo(record.file_url, false);
+    setLibraryOpen(false);
+    flash(`Now showing · ${record.title}`);
+  }, [flash, startVideo]);
+
+  const refreshVideos = useCallback(async () => {
+    const items = await listTheatreVideos();
+    if (aliveRef.current) setVideos(items);
+  }, []);
+
+  const openLibrary = useCallback(() => {
+    setLibraryOpen((open) => {
+      if (open) return false;
+      setLibraryLoading(true);
+      refreshVideos().catch(() => {
+        if (aliveRef.current) flash('Could not load the community videos right now.');
+      }).finally(() => {
+        if (aliveRef.current) setLibraryLoading(false);
+      });
+      return true;
+    });
+  }, [flash, refreshVideos]);
+
+  const uploadVideo = useCallback(async (file) => {
+    if (!file) return;
+    if (file.size > MAX_VIDEO_BYTES) {
+      flash(`Too big to upload — the theatre takes films up to 100 MB (yours is ${formatVideoSize(file.size)}). Use Load Video to play it from this computer.`);
+      return;
+    }
+    setUploading(true);
+    flash(`Uploading ${formatVideoSize(file.size)} to the public theatre library…`);
+    try {
+      const record = await uploadTheatreVideo(file);
+      await refreshVideos();
+      playLibraryVideo(record);
+      flash(`“${record.title}” is saved in the theatre for everyone.`);
+    } catch (error) {
+      flash(`Upload failed. ${error?.message || 'File storage is unavailable right now.'}`);
+    } finally {
+      if (aliveRef.current) setUploading(false);
+    }
+  }, [flash, playLibraryVideo, refreshVideos]);
 
   const toggleVideo = useCallback(() => {
     const element = videoElRef.current;
@@ -273,7 +330,22 @@ export default function Cinema() {
             onLoadVideo={loadVideo}
             onToggleVideo={toggleVideo}
             fileInputRef={fileInputRef}
+            onUploadVideo={uploadVideo}
+            uploadInputRef={uploadInputRef}
+            uploading={uploading}
+            libraryOpen={libraryOpen}
+            onToggleLibrary={openLibrary}
           />
+          {libraryOpen && (
+            <TheatreVideoLibrary
+              videos={videos}
+              loading={libraryLoading}
+              uploading={uploading}
+              onPlay={playLibraryVideo}
+              onUpload={() => uploadInputRef.current?.click()}
+              onClose={() => setLibraryOpen(false)}
+            />
+          )}
         </>
       ) : (
         <div className="cinema-cta">

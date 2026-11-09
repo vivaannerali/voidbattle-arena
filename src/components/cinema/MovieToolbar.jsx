@@ -17,6 +17,11 @@ export default function MovieToolbar({
   onLoadVideo,
   onToggleVideo,
   fileInputRef,
+  onUploadVideo,
+  uploadInputRef,
+  uploading,
+  libraryOpen,
+  onToggleLibrary,
 }) {
   const latest = held.length ? snackById(held[held.length - 1]) : null;
 
@@ -42,6 +47,28 @@ export default function MovieToolbar({
           if (file) onLoadVideo(file);
         }}
       />
+      <button
+        type="button"
+        onClick={() => uploadInputRef.current?.click()}
+        disabled={uploading}
+        title="Upload a video (up to 100 MB) so it stays in the theatre for everyone"
+      >
+        {uploading ? 'Uploading…' : 'Upload Video'}
+      </button>
+      <input
+        ref={uploadInputRef}
+        className="cinema-file-input"
+        type="file"
+        accept="video/*,.mov,.mp4,.webm"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = '';
+          if (file) onUploadVideo(file);
+        }}
+      />
+      <button type="button" onClick={onToggleLibrary} aria-pressed={libraryOpen}>
+        Video Library
+      </button>
       {video && (
         <button type="button" onClick={onToggleVideo}>{videoPlaying ? 'Pause' : 'Play'}</button>
       )}
