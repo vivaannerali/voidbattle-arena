@@ -13,8 +13,18 @@ export async function listTheatreVideos() {
   return page.items;
 }
 
-export async function addTheatreVideoLink(title, url) {
+/** Free hosts hand out a share page; the player needs the direct file endpoint. */
+export function normalizeVideoUrl(url) {
   const clean = url.trim();
+  const pixeldrain = clean.match(/^https:\/\/pixeldrain\.com\/u\/([A-Za-z0-9]+)/i);
+  if (pixeldrain) return `https://pixeldrain.com/api/file/${pixeldrain[1]}`;
+  const gofile = clean.match(/^https:\/\/gofile\.io\/d\/([A-Za-z0-9]+)/i);
+  if (gofile) return `https://gofile.io/d/${gofile[1]}`;
+  return clean;
+}
+
+export async function addTheatreVideoLink(title, url) {
+  const clean = normalizeVideoUrl(url);
   if (!/^https:\/\/\S+$/i.test(clean)) throw new Error('Paste a full https:// link to the video file.');
   const fallback = clean.split('?')[0].split('/').pop() || 'Linked film';
   return base44.entities.TheatreVideo.create({

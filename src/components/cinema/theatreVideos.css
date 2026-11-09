@@ -132,6 +132,13 @@
   cursor: default;
 }
 
+.theatre-link-hint {
+  margin: 0;
+  color: rgba(169, 162, 181, 0.8);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
 .theatre-link-error {
   margin: 0;
   color: #e59a9a;

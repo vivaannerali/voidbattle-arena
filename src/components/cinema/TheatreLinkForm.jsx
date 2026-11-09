@@ -29,9 +29,14 @@ export default function TheatreLinkForm({ onAdd }) {
         <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="My 70mm feature" maxLength={80} />
       </label>
       <label>
-        <span>Direct video link (mp4 / webm / mov)</span>
-        <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://…/film.mp4" required />
+        <span>Film link (direct file, or a pixeldrain share link)</span>
+        <input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://pixeldrain.com/u/… or https://…/film.mp4" required />
       </label>
+      <p className="theatre-link-hint">
+        Free and no account: put the 8 GB file on pixeldrain.com (20 GB per file), then paste its share link here — it is
+        converted to the streaming link automatically. MP4 (H.264) plays everywhere; a .mov often will not, so remux it to
+        MP4 first if the screen stays black.
+      </p>
       <button type="submit" disabled={saving || !url.trim()}>
         {saving ? <Loader2 size={13} className="theatre-library-spin" /> : <Link2 size={13} />}
         {saving ? 'Saving…' : 'Save Film'}
