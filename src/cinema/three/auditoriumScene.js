@@ -3,6 +3,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import createCrowd from '@/cinema/three/crowd';
 import SeatedView from '@/components/cinema/SeatedView';
 import movieProjection from '@/cinema/films/movieProjection';
+import videoScreen from '@/cinema/films/videoScreen';
 import { SEATS, ROWS, RISE, ROW_DEPTH, FRONT_Z, DEFAULT_SEAT, getSeat, audienceSeats } from '@/cinema/seatLayout';
 
 import { SCREEN_RADIUS as RADIUS, SCREEN_HEIGHT, SCREEN_ARC as THETA, SCREEN_CENTRE_Y } from '@/cinema/theatreFormat';
@@ -18,6 +19,7 @@ export default function createAuditorium({ aspect }) {
 
   const movie = movieProjection();
   const screenMaterial = new THREE.MeshBasicMaterial({ map: movie.texture, side: THREE.DoubleSide });
+  let uploaded = null;
   const screen = new THREE.Mesh(
     new THREE.CylinderGeometry(RADIUS, RADIUS, SCREEN_HEIGHT, 96, 1, true, Math.PI - THETA / 2, THETA),
     screenMaterial
@@ -206,7 +208,13 @@ export default function createAuditorium({ aspect }) {
     pointerDown: view.pointerDown,
     pointerMove: view.pointerMove,
     pointerUp: view.pointerUp,
-    beforeRender: renderer => movie.render(renderer),
+    beforeRender: renderer => { if (!uploaded) movie.render(renderer); },
+    setVideo(element) {
+      uploaded?.dispose();
+      uploaded = element ? videoScreen(element) : null;
+      screen.material = uploaded ? uploaded.material : screenMaterial;
+      uploaded?.fit();
+    },
     setSeat(id) {
       const selected = getSeat(id);
       if (selected === playerSeat) return;
@@ -225,7 +233,8 @@ export default function createAuditorium({ aspect }) {
       time += dt;
       const target = mood?.excitement ?? 0.25;
       energy += (target - energy) * Math.min(1, dt * 1.6);
-      movie.update(elapsed);
+      if (uploaded) uploaded.update(time);
+      else movie.update(elapsed);
       crowd.update(elapsed, energy, mood?.gasp ?? 0);
       screenLight.intensity = 85 + energy * 110 + Math.sin(elapsed * 2.7) * 8;
       spillLight.intensity = 32 + energy * 45;
@@ -235,6 +244,7 @@ export default function createAuditorium({ aspect }) {
       view.update(dt, time);
     },
     dispose() {
+      uploaded?.dispose();
       movie.dispose();
       crowd.dispose();
       seatMesh.dispose();

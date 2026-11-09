@@ -28,7 +28,11 @@ export default function Cinema() {
   const [entering, setEntering] = useState(false);
   const [seat, setSeat] = useState(DEFAULT_SEAT);
   const [pickingSeat, setPickingSeat] = useState(false);
+  const [video, setVideo] = useState(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
+  const fileInputRef = useRef(null);
+  const videoElRef = useRef(null);
   const audioRef = useRef(null);
   const narratorRef = useRef(null);
   const runtimeRef = useRef(null);
@@ -136,6 +140,64 @@ export default function Cinema() {
     setEntering(false);
   }, []);
 
+  const clearVideo = useCallback(() => {
+    const element = videoElRef.current;
+    videoElRef.current = null;
+    if (element) {
+      const source = element.src;
+      element.pause();
+      audioRef.current?.detachVideo();
+      element.removeAttribute('src');
+      element.load();
+      if (source.startsWith('blob:')) URL.revokeObjectURL(source);
+    }
+    setVideo(null);
+    setVideoPlaying(false);
+  }, []);
+
+  const loadVideo = useCallback((file) => {
+    if (!file) return;
+    stopPlayback();
+    const previous = videoElRef.current;
+    const element = document.createElement('video');
+    element.src = URL.createObjectURL(file);
+    element.loop = true;
+    element.playsInline = true;
+    element.preload = 'auto';
+    element.addEventListener('loadedmetadata', () => {
+      if (aliveRef.current) flash(`70mm presentation loaded · ${element.videoWidth}×${element.videoHeight}`);
+    }, { once: true });
+    videoElRef.current = element;
+    audioRef.current?.resume();
+    audioRef.current?.attachVideo(element);
+    setVideo(element);
+    setPickingSeat(false);
+    setMode('auditorium');
+    element.play().then(() => {
+      if (aliveRef.current) setVideoPlaying(true);
+    }).catch(() => {
+      if (aliveRef.current) setVideoPlaying(false);
+    });
+    if (previous) {
+      const source = previous.src;
+      previous.pause();
+      if (source.startsWith('blob:')) URL.revokeObjectURL(source);
+    }
+  }, [flash, stopPlayback]);
+
+  const toggleVideo = useCallback(() => {
+    const element = videoElRef.current;
+    if (!element) return;
+    if (element.paused) {
+      element.play().then(() => {
+        if (aliveRef.current) setVideoPlaying(true);
+      }).catch(() => {});
+    } else {
+      element.pause();
+      setVideoPlaying(false);
+    }
+  }, []);
+
   const enterExperience = useCallback((id) => {
     const next = experienceById(id);
     if (!next) return;
@@ -148,6 +210,7 @@ export default function Cinema() {
   const startMovie = useCallback(() => {
     const next = experience;
     if (!next) return;
+    clearVideo();
     setPickingSeat(false);
     runtimeRef.current = new CinemaRuntime(next, {
       onSubtitle: (text) => {
@@ -164,10 +227,15 @@ export default function Cinema() {
     window.setTimeout(() => {
       if (aliveRef.current) setEntering(false);
     }, 1500);
-  }, [experience]);
+  }, [clearVideo, experience]);
 
   const go = useCallback((nextMode) => {
     stopPlayback();
+    const element = videoElRef.current;
+    if (element && !element.paused) {
+      element.pause();
+      setVideoPlaying(false);
+    }
     setPickingSeat(false);
     setMode(nextMode);
   }, [stopPlayback]);
@@ -181,7 +249,7 @@ export default function Cinema() {
 
   return (
     <div className="cinema-root">
-      <CinemaStage mode={mode} experience={experience} seat={seat} preview={pickingSeat} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} onView={camera => audioRef.current?.followView(camera)} />
+      <CinemaStage mode={mode} experience={experience} seat={seat} preview={pickingSeat} video={video} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} onView={camera => audioRef.current?.followView(camera)} />
       <CinemaHud ticket={ticket} held={held} notice={notice} onEat={eatSnack} docked={mode === 'auditorium'} />
       <HoverTag hover={hover} />
       <Link to="/" className="cinema-game-return">Back to Bed Wars</Link>
@@ -200,6 +268,11 @@ export default function Cinema() {
             onSubtitles={() => setSubtitlesOn((value) => !value)}
             narration={narration}
             onNarration={setNarration}
+            video={Boolean(video)}
+            videoPlaying={videoPlaying}
+            onLoadVideo={loadVideo}
+            onToggleVideo={toggleVideo}
+            fileInputRef={fileInputRef}
           />
         </>
       ) : (

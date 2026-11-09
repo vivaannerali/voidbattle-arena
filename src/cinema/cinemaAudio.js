@@ -55,6 +55,7 @@ export function createCinemaAudio() {
   let buffers = {};
   let alive = true;
   let room = null;
+  let videoNodes = [];
 
   function noise(seconds = 2) {
     const key = `n${seconds}`;
@@ -376,7 +377,41 @@ export function createCinemaAudio() {
     burst({ at: t, dur: 0.85, gain: 0.12, freq: 900, q: 0.6, attack: 0.01, sweep: 280 });
   }
 
+  // Uploaded video audio runs through the same speaker graph as the procedural
+  // mix: centre-weighted front stage, an LFE low-pass and hall reverb.
+  function detachVideo() {
+    videoNodes.forEach((node) => {
+      try { node.disconnect(); } catch (error) { /* already detached */ }
+    });
+    videoNodes = [];
+  }
+
+  function attachVideo(element) {
+    if (!ensure() || !element) return false;
+    detachVideo();
+    let source;
+    try { source = ctx.createMediaElementSource(element); } catch (error) { return false; }
+    const gain = ctx.createGain();
+    gain.gain.value = 0.95;
+    const front = busFor(0);
+    const low = ctx.createBiquadFilter();
+    low.type = 'lowpass';
+    low.frequency.value = 110;
+    const send = ctx.createGain();
+    send.gain.value = 0.16;
+    source.connect(gain);
+    if (front) gain.connect(front);
+    gain.connect(low);
+    if (lfeIn) low.connect(lfeIn);
+    gain.connect(send);
+    send.connect(reverb);
+    videoNodes = [source, gain, low, send];
+    return true;
+  }
+
   return {
+    attachVideo,
+    detachVideo,
     resume() {
       const audio = ensure();
       if (!audio) return 'none';
@@ -440,6 +475,7 @@ export function createCinemaAudio() {
     },
     dispose() {
       alive = false;
+      detachVideo();
       room?.dispose(); room = null;
       stopMusic();
       if (crowd) {

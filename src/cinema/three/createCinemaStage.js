@@ -70,6 +70,7 @@ export default class CinemaStage {
     }
     this.mode = mode;
     this.current = this.scenes[mode];
+    if (mode === 'auditorium' && this.video) this.current.setVideo?.(this.video);
     this.host.style.cursor = 'default';
     this.hovered = null;
     this.hoveredChanged = null;
@@ -79,6 +80,11 @@ export default class CinemaStage {
 
   setExperience(experience) {
     if (experience) this.scenes.auditorium?.setExperience(experience);
+  }
+
+  setVideo(video) {
+    this.video = video || null;
+    this.scenes.auditorium?.setVideo?.(this.video);
   }
 
   pickAt(clientX, clientY) {

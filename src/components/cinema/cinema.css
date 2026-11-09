@@ -279,6 +279,10 @@
   z-index: 6;
 }
 
+.cinema-file-input {
+  display: none;
+}
+
 .cinema-toolbar-title {
   display: flex;
   flex-direction: column;
