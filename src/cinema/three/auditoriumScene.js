@@ -30,9 +30,9 @@ export default function createAuditorium({ aspect }) {
   scene.background = new THREE.Color('#05060a');
   scene.fog = new THREE.Fog('#05060a', 36, 100);
 
-  const camera = new THREE.PerspectiveCamera(58, aspect, 0.1, 240);
-  camera.position.set(0, 10.4, 6.6);
-  camera.lookAt(0, 8.4, -22);
+  const camera = new THREE.PerspectiveCamera(66, aspect, 0.1, 240);
+  camera.position.set(0, 9.9, 5.5);
+  camera.lookAt(0, 9, -24);
 
   const uniformAspect = (RADIUS * THETA) / SCREEN_HEIGHT;
   const uniforms = { uTime: { value: 0 }, uEnergy: { value: 0.25 }, uAspect: { value: uniformAspect } };
@@ -238,9 +238,9 @@ export default function createAuditorium({ aspect }) {
       beam.material.opacity = 0.032 + energy * 0.02 + Math.sin(elapsed * 8.3) * 0.004;
       beamDust.material.opacity = 0.22 + energy * 0.22;
       fibreStars.material.opacity = 0.5 + Math.sin(time * 0.7) * 0.1;
-      camera.position.y = 10.4 + Math.sin(time * 0.23) * 0.07;
-      camera.position.x = Math.sin(time * 0.17) * 0.16;
-      camera.lookAt(0, 8.4, -22);
+      camera.position.y = 9.9 + Math.sin(time * 0.23) * 0.06;
+      camera.position.x = Math.sin(time * 0.17) * 0.14;
+      camera.lookAt(0, 9, -24);
     },
     dispose() {
       crowd.dispose();

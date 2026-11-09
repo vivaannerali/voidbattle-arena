@@ -33,9 +33,9 @@ export default function buildLobby({ aspect }) {
   scene.background = new THREE.Color('#07060b');
   scene.fog = new THREE.Fog('#07060b', 11, 32);
 
-  const camera = new THREE.PerspectiveCamera(52, aspect, 0.1, 70);
-  camera.position.set(0, 1.62, 7.2);
-  camera.lookAt(0, 1.42, -5.6);
+  const camera = new THREE.PerspectiveCamera(58, aspect, 0.1, 70);
+  camera.position.set(0, 1.62, -1.4);
+  camera.lookAt(0, 1.72, -5.6);
 
   const pickables = [];
   const items = [];
@@ -43,7 +43,7 @@ export default function buildLobby({ aspect }) {
   const floorTexture = tileTexture();
   floorTexture.wrapS = THREE.RepeatWrapping;
   floorTexture.wrapT = THREE.RepeatWrapping;
-  floorTexture.repeat.set(4, 3);
+  floorTexture.repeat.set(9, 6.5);
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(36, 26),
     new THREE.MeshStandardMaterial({ map: floorTexture, color: '#5b5a68', roughness: 0.3, metalness: 0.35 })
@@ -82,18 +82,21 @@ export default function buildLobby({ aspect }) {
 
   const menu = menuTexture(SNACKS);
   const menuBoard = new THREE.Mesh(
-    new THREE.PlaneGeometry(9.4, 4.7),
+    new THREE.PlaneGeometry(10, 4.4),
     new THREE.MeshStandardMaterial({ map: menu, emissiveMap: menu, emissive: '#ffffff', emissiveIntensity: 0.45, roughness: 0.6 })
   );
-  menuBoard.position.set(0, 4.35, -9.85);
+  menuBoard.position.set(0, 4, -9.85);
   scene.add(menuBoard);
 
   const neon = new THREE.Mesh(
-    new THREE.PlaneGeometry(6.4, 1.6),
-    new THREE.MeshBasicMaterial({ map: signTexture('CANDY BAR', 'EVERYTHING $0.00 · PREMIUM FREE PASS', '#ffd27a'), transparent: true })
+    new THREE.PlaneGeometry(4, 1),
+    new THREE.MeshBasicMaterial({ map: signTexture('CANDY BAR', 'EVERYTHING $0.00', '#ffd27a'), transparent: true })
   );
-  neon.position.set(0, 6.7, -9.8);
+  neon.position.set(0, 0.5, -4.74);
   scene.add(neon);
+  const neonLight = new THREE.PointLight('#ffbd6a', 14, 4, 2);
+  neonLight.position.set(0, 1.1, -4.2);
+  scene.add(neonLight);
 
   const shelfMaterial = new THREE.MeshStandardMaterial({ color: '#2a2434', roughness: 0.7 });
   for (let row = 0; row < 2; row++) {
@@ -140,27 +143,28 @@ export default function buildLobby({ aspect }) {
   const counterTopY = 1.14;
   SNACKS.forEach((snack, index) => {
     const group = createSnackModel(snack);
-    group.position.set(-4.8 + index * 1.6, counterTopY, -5.5);
-    group.scale.setScalar(snack.size);
+    const baseSize = snack.size * 1.9;
+    group.position.set(-3.3 + index * 1.1, counterTopY, -5.5);
+    group.scale.setScalar(baseSize);
     group.userData.pick = { action: 'snack', id: snack.id, label: snack.name, hint: 'Collect · $0.00' };
     group.userData.hoverTarget = 0;
     group.userData.hover = 0;
-    group.userData.baseSize = snack.size;
+    group.userData.baseSize = baseSize;
     scene.add(group);
     items.push(group);
 
     const hit = new THREE.Mesh(
-      new THREE.BoxGeometry(1.15, 1.05, 1.05),
+      new THREE.BoxGeometry(0.5, 0.46, 0.46),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     );
-    hit.position.set(0, 0.34, 0);
+    hit.position.set(0, 0.18, 0);
     group.add(hit);
     pickables.push(hit);
-
-    const glow = new THREE.PointLight(group.userData.haloColor || '#ffd68a', 2.4, 1.6, 2);
-    glow.position.set(0, 0.34, 0.2);
-    group.add(glow);
   });
+
+  const displayLight = new THREE.PointLight('#ffe0b0', 22, 7, 2);
+  displayLight.position.set(0, 2.3, -4.9);
+  scene.add(displayLight);
 
   const ambient = new THREE.AmbientLight('#40455e', 0.85);
   const hemi = new THREE.HemisphereLight('#33405c', '#0a0a10', 0.55);
@@ -199,9 +203,9 @@ export default function buildLobby({ aspect }) {
     },
     update(dt) {
       time += dt;
-      camera.position.x = Math.sin(time * 0.28) * 0.5;
-      camera.position.y = 1.62 + Math.sin(time * 0.42) * 0.05;
-      camera.lookAt(Math.sin(time * 0.22) * 0.7, 1.4, -5.6);
+      camera.position.x = Math.sin(time * 0.28) * 0.18;
+      camera.position.y = 1.62 + Math.sin(time * 0.42) * 0.03;
+      camera.lookAt(Math.sin(time * 0.22) * 0.3, 1.7, -5.6);
       dust.rotation.y = time * 0.01;
       items.forEach((item) => {
         const target = item.userData.hoverTarget;

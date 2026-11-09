@@ -87,10 +87,10 @@ export default function buildHub({ aspect }) {
   });
 
   const nameSign = new THREE.Mesh(
-    new THREE.PlaneGeometry(8, 2),
+    new THREE.PlaneGeometry(6.4, 1.6),
     new THREE.MeshBasicMaterial({ map: signTexture('IMAX 70MM', 'ULTIMATE ARENA', '#d9ab5a'), transparent: true })
   );
-  nameSign.position.set(0, 7.95, -10.9);
+  nameSign.position.set(0, 8, -10.9);
   scene.add(nameSign);
 
   EXPERIENCES.forEach((experience, index) => {
@@ -99,7 +99,7 @@ export default function buildHub({ aspect }) {
       { x: -9.6, y: 4.4, w: 4.2, h: 6.4 },
       { x: 9.6, y: 4.4, w: 4.2, h: 6.4 },
       { x: 15, y: 4.4, w: 4.2, h: 6.4 },
-      { x: 0, y: 11, w: 3.1, h: 4.13 },
+      { x: 0, y: 11, w: 2.75, h: 4.13 },
     ];
     const slot = slots[index];
     const texture = posterTexture(experience, index);

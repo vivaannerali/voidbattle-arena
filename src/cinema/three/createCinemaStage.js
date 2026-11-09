@@ -120,6 +120,8 @@ export default class CinemaStage {
 
   onLeave() {
     this.hovered = null;
+    this.hoveredChanged = null;
+    this.hoverAt = null;
     this.host.style.cursor = 'default';
     this.current?.hover?.(null);
     this.options.onHover?.(null);
