@@ -10,7 +10,9 @@ export default class CinemaStage {
     this.host = host;
     this.options = options;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
@@ -139,13 +141,13 @@ export default class CinemaStage {
     const dt = Math.min(0.06, now - this.last);
     this.last = now;
     const runtime = this.options.getRuntime?.();
-    if (runtime) {
+    if (runtime && !this.preview) {
       runtime.update(dt);
       this.mood = runtime;
       this.elapsed = runtime.elapsed;
     }
     if (!this.current) return;
-    this.current.update(dt, this.elapsed, this.mood);
+    this.current.update(dt, this.preview ? 1.5 : this.elapsed, this.mood);
     this.current.beforeRender?.(this.renderer);
     this.renderer.render(this.current.scene, this.current.camera);
   }

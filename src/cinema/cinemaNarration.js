@@ -4,6 +4,7 @@ export function createNarrator({ onStart, onEnd } = {}) {
   let voice = null;
   let volume = 0.75;
   let enabled = true;
+  let pending = null;
 
   function pickVoice() {
     if (!synth) return;
@@ -35,7 +36,8 @@ export function createNarrator({ onStart, onEnd } = {}) {
         utterance.onstart = () => onStart?.();
         utterance.onend = () => onEnd?.();
         utterance.onerror = () => onEnd?.();
-        window.setTimeout(() => {
+        window.clearTimeout(pending);
+        pending = window.setTimeout(() => {
           try {
             synth.speak(utterance);
           } catch (error) {
@@ -47,6 +49,7 @@ export function createNarrator({ onStart, onEnd } = {}) {
       }
     },
     cancel() {
+      window.clearTimeout(pending);
       if (!synth) return;
       try { synth.cancel(); } catch (error) { /* nothing speaking */ }
       onEnd?.();

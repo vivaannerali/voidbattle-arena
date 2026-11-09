@@ -1,13 +1,14 @@
 import { snackById } from '@/cinema/snacks';
+import { getSeat, seatLabel } from '@/cinema/seatLayout';
 
-export default function MovieToolbar({ experience, held, onLobby, onChangeMovie, onEat, subtitlesOn, onSubtitles, narration, onNarration }) {
+export default function MovieToolbar({ experience, seat, held, onLobby, onChangeMovie, onEat, subtitlesOn, onSubtitles, narration, onNarration }) {
   const latest = held.length ? snackById(held[held.length - 1]) : null;
 
   return (
     <div className="cinema-toolbar" role="toolbar" aria-label="Movie controls">
       <span className="cinema-toolbar-title">
         <b>{experience?.marquee}</b>
-        <small>3D seated view · drag to look around or down</small>
+        <small>{seatLabel(getSeat(seat))} · Drag to look around</small>
       </span>
       <button type="button" onClick={onLobby} title="Back to the candy bar lobby">Return to Lobby</button>
       <button type="button" onClick={onChangeMovie} title="Choose a different presentation">Change Movie</button>

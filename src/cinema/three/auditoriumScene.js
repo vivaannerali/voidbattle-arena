@@ -3,38 +3,22 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import createCrowd from '@/cinema/three/crowd';
 import SeatedView from '@/components/cinema/SeatedView';
 import movieProjection from '@/cinema/films/movieProjection';
+import { SEATS, ROWS, RISE, ROW_DEPTH, FRONT_Z, DEFAULT_SEAT, getSeat, audienceSeats } from '@/cinema/seatLayout';
 
 const RADIUS = 26;
 const SCREEN_HEIGHT = 17;
 const THETA = 1.78;
-const ROWS = 20;
-const RISE = 0.42;
-const ROW_DEPTH = 1.15;
-const FRONT_Z = -19;
 const HALL_WIDTH = 46;
-
-function buildSeats() {
-  const seats = [];
-  for (let row = 0; row < ROWS; row++) {
-    const z = FRONT_Z + row * ROW_DEPTH;
-    const y = 0.15 + row * RISE;
-    for (let x = -22; x <= 22.01; x += 0.92) {
-      if (Math.abs(Math.abs(x) - 13.5) < 1.05) continue;
-      seats.push({ x, y: y + 0.18, z, rowY: y, yaw: (Math.random() - 0.5) * 0.14 });
-    }
-  }
-  return seats;
-}
 
 export default function createAuditorium({ aspect }) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#05060a');
   scene.fog = new THREE.Fog('#05060a', 36, 100);
 
-  const camera = new THREE.PerspectiveCamera(74, aspect, 0.05, 240);
+  const camera = new THREE.PerspectiveCamera(70, aspect, 0.05, 240);
 
   const movie = movieProjection();
-  const screenMaterial = new THREE.MeshBasicMaterial({ map: movie.texture, side: THREE.DoubleSide, toneMapped: false });
+  const screenMaterial = new THREE.MeshBasicMaterial({ map: movie.texture, side: THREE.DoubleSide });
   const screen = new THREE.Mesh(
     new THREE.CylinderGeometry(RADIUS, RADIUS, SCREEN_HEIGHT, 96, 1, true, Math.PI - THETA / 2, THETA),
     screenMaterial
@@ -69,7 +53,7 @@ export default function createAuditorium({ aspect }) {
     scene.add(lip);
   }
 
-  const seats = buildSeats();
+  const seats = SEATS;
 
   const cushion = new THREE.BoxGeometry(0.58, 0.14, 0.5);
   cushion.translate(0, 0.42, 0);
@@ -97,10 +81,10 @@ export default function createAuditorium({ aspect }) {
   seatMesh.instanceColor.needsUpdate = true;
   scene.add(seatMesh);
 
-  const playerSeat = seats.find(seat => seat.z > 2.8 && Math.abs(seat.x) < .4);
+  let playerSeat = getSeat(DEFAULT_SEAT);
   const view = SeatedView(scene, camera, new THREE.Vector3(playerSeat.x, playerSeat.rowY, playerSeat.z));
   view.update(1, 0);
-  const crowd = createCrowd(seats.filter(seat => seat !== playerSeat));
+  let crowd = createCrowd(audienceSeats(playerSeat));
   scene.add(crowd.group);
 
   const wallMaterial = new THREE.MeshStandardMaterial({ color: '#0f0d14', roughness: 0.94 });
@@ -196,8 +180,8 @@ export default function createAuditorium({ aspect }) {
   );
   scene.add(beamDust);
 
-  const ambient = new THREE.AmbientLight('#1b2438', 1.4);
-  const hemi = new THREE.HemisphereLight('#22304a', '#07070b', 0.75);
+  const ambient = new THREE.AmbientLight('#1b2438', .65);
+  const hemi = new THREE.HemisphereLight('#22304a', '#07070b', .4);
   const screenLight = new THREE.PointLight('#7fe9ff', 120, 90, 2);
   screenLight.position.set(0, 8.6, -17);
   const spillLight = new THREE.PointLight('#7fe9ff', 45, 55, 2);
@@ -219,10 +203,18 @@ export default function createAuditorium({ aspect }) {
     pointerMove: view.pointerMove,
     pointerUp: view.pointerUp,
     beforeRender: renderer => movie.render(renderer),
+    setSeat(id) {
+      const selected = getSeat(id);
+      if (selected === playerSeat) return;
+      playerSeat = selected;
+      view.setSeat(new THREE.Vector3(selected.x, selected.rowY, selected.z));
+      scene.remove(crowd.group); crowd.dispose();
+      crowd = createCrowd(audienceSeats(selected)); scene.add(crowd.group);
+    },
     setExperience(experience) {
       movie.setFilm(experience);
-      screenLight.color.set(experience.screenLight);
-      spillLight.color.set(experience.screenLight);
+      screenLight.color.set(experience.screenLight || experience.accent);
+      spillLight.color.set(experience.screenLight || experience.accent);
       ceilingLight.color.set(experience.accent2);
     },
     update(dt, elapsed, mood) {

@@ -5,6 +5,8 @@ import CinemaHud from '@/components/cinema/CinemaHud';
 import MovieToolbar from '@/components/cinema/MovieToolbar';
 import SubtitleTrack from '@/components/cinema/SubtitleTrack';
 import HoverTag from '@/components/cinema/HoverTag';
+import SeatPicker from '@/components/cinema/SeatPicker';
+import { DEFAULT_SEAT } from '@/cinema/seatLayout';
 import CinemaRuntime from '@/cinema/cinemaRuntime';
 import { createCinemaAudio } from '@/cinema/cinemaAudio';
 import { createNarrator } from '@/cinema/cinemaNarration';
@@ -24,6 +26,8 @@ export default function Cinema() {
   const [narration, setNarration] = useState(78);
   const [hover, setHover] = useState(null);
   const [entering, setEntering] = useState(false);
+  const [seat, setSeat] = useState(DEFAULT_SEAT);
+  const [pickingSeat, setPickingSeat] = useState(false);
 
   const audioRef = useRef(null);
   const narratorRef = useRef(null);
@@ -136,6 +140,15 @@ export default function Cinema() {
     const next = experienceById(id);
     if (!next) return;
     stopPlayback();
+    setExperience(next);
+    setPickingSeat(true);
+    setMode('auditorium');
+  }, [stopPlayback]);
+
+  const startMovie = useCallback(() => {
+    const next = experience;
+    if (!next) return;
+    setPickingSeat(false);
     runtimeRef.current = new CinemaRuntime(next, {
       onSubtitle: (text) => {
         if (aliveRef.current) setSubtitle(text);
@@ -151,10 +164,11 @@ export default function Cinema() {
     window.setTimeout(() => {
       if (aliveRef.current) setEntering(false);
     }, 1500);
-  }, [stopPlayback]);
+  }, [experience]);
 
   const go = useCallback((nextMode) => {
     stopPlayback();
+    setPickingSeat(false);
     setMode(nextMode);
   }, [stopPlayback]);
 
@@ -167,16 +181,17 @@ export default function Cinema() {
 
   return (
     <div className="cinema-root">
-      <CinemaStage mode={mode} experience={experience} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} />
+      <CinemaStage mode={mode} experience={experience} seat={seat} preview={pickingSeat} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} />
       <CinemaHud ticket={ticket} held={held} notice={notice} onEat={eatSnack} docked={mode === 'auditorium'} />
       <HoverTag hover={hover} />
       <Link to="/" className="cinema-game-return">Back to Bed Wars</Link>
 
-      {mode === 'auditorium' ? (
+      {pickingSeat && experience ? <SeatPicker selected={seat} experience={experience} onSelect={setSeat} onStart={startMovie} onCancel={() => go('hub')} /> : mode === 'auditorium' ? (
         <>
           <SubtitleTrack text={subtitle} on={subtitlesOn} />
           <MovieToolbar
             experience={experience}
+            seat={seat}
             held={held}
             onLobby={() => go('lobby')}
             onChangeMovie={() => go('hub')}

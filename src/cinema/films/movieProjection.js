@@ -3,18 +3,21 @@ import movieWorld from '@/cinema/films/movieWorld';
 import movieActor from '@/cinema/films/movieActor';
 import movieDirection from '@/cinema/films/movieDirection';
 import movieFrame from '@/cinema/films/movieFrame';
+import movieLighting from '@/cinema/films/movieLighting';
 import { EXPERIENCES } from '@/cinema/cinemaContent';
-import { textTexture, wrapLines } from '@/cinema/three/sceneKit';
+import { textTexture } from '@/cinema/three/sceneKit';
 
 export default function movieProjection() {
   const world = movieWorld(), camera = new THREE.PerspectiveCamera(48, 2.72, .1, 150);
-  const target = new THREE.WebGLRenderTarget(1632, 600);
+  const target = new THREE.WebGLRenderTarget(2448, 900, { samples: 4 });
+  target.texture.anisotropy = 8;
   target.texture.repeat.x = -1; target.texture.offset.x = 1;
   const cast = ['Ephirisi', 'Larp108', 'AKD23'].map(movieActor);
   cast.forEach(actor => world.scene.add(actor.root));
   world.scene.add(camera);
+  const disposeLighting = movieLighting(world.scene);
   const caption = new THREE.Mesh(new THREE.PlaneGeometry(9.6, .62), new THREE.MeshBasicMaterial({ transparent: true, depthTest: false }));
-  caption.position.set(0, -1.45, -4); caption.renderOrder = 100; camera.add(caption);
+  caption.position.set(0, 0, -4); caption.renderOrder = 100; camera.add(caption);
   const frame = movieFrame(camera);
   let film = EXPERIENCES[0], actors = cast, previous = -1;
   const title = (index) => {
@@ -24,7 +27,7 @@ export default function movieProjection() {
       ctx.textAlign = 'center'; ctx.fillStyle = film.accent; ctx.font = 'bold 30px monospace';
       ctx.fillText(film.marquee, w / 2, 35);
       ctx.fillStyle = '#ffffff'; ctx.font = '25px sans-serif';
-      wrapLines(ctx, film.shots[index][1], w - 80).slice(0, 2).forEach((line, i) => ctx.fillText(line, w / 2, 75 + i * 30));
+      ctx.fillText('AN ORIGINAL BED WARS FILM', w / 2, 85);
     } }); caption.material.needsUpdate = true;
   };
   return { texture: target.texture,
@@ -37,11 +40,12 @@ export default function movieProjection() {
     },
     update(time) {
       const index = movieDirection(world, actors, camera, film, time); frame(time);
+      caption.visible = time < 4;
       if (index !== previous) { title(index); previous = index; }
     },
     render(renderer) { const old = renderer.getRenderTarget(); renderer.setRenderTarget(target); renderer.render(world.scene, camera); renderer.setRenderTarget(old); },
     dispose() {
-      target.dispose(); cast.forEach(actor => actor.dispose()); caption.material.map?.dispose();
+      disposeLighting(); target.dispose(); cast.forEach(actor => actor.dispose()); caption.material.map?.dispose();
       const geometries = new Set(), materials = new Set();
       world.scene.traverse(object => { if (object.geometry) geometries.add(object.geometry); if (object.material) materials.add(object.material); });
       geometries.forEach(geometry => geometry.dispose()); materials.forEach(material => material.dispose());
