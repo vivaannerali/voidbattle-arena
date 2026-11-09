@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
+import Cinema from '@/pages/Cinema';
 import Game from '@/pages/Game';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
@@ -15,9 +16,10 @@ const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
   // This public, account-free game must not wait for an online account check.
-  if (['/', '/about', '/contact'].includes(window.location.pathname.replace(/\/$/, '') || '/')) return (
+  if (['/', '/arena', '/about', '/contact'].includes(window.location.pathname.replace(/\/$/, '') || '/')) return (
     <Routes>
-      <Route path="/" element={<Game />} />
+      <Route path="/" element={<Cinema />} />
+      <Route path="/arena" element={<Game />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
     </Routes>
@@ -46,7 +48,8 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={<Game />} />
+      <Route path="/" element={<Cinema />} />
+      <Route path="/arena" element={<Game />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
