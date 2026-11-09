@@ -7,7 +7,7 @@ export default function MovieToolbar({ experience, held, onLobby, onChangeMovie,
     <div className="cinema-toolbar" role="toolbar" aria-label="Movie controls">
       <span className="cinema-toolbar-title">
         <b>{experience?.marquee}</b>
-        <small>Original animated experience · live synthesis</small>
+        <small>3D seated view · drag to look around or down</small>
       </span>
       <button type="button" onClick={onLobby} title="Back to the candy bar lobby">Return to Lobby</button>
       <button type="button" onClick={onChangeMovie} title="Choose a different presentation">Change Movie</button>
