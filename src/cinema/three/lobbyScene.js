@@ -103,14 +103,6 @@ export default function buildLobby({ aspect }) {
     const shelf = new THREE.Mesh(new THREE.BoxGeometry(13, 0.12, 0.7), shelfMaterial);
     shelf.position.set(0, 2.1 + row * 1.5, -8.6);
     scene.add(shelf);
-    for (let i = 0; i < 9; i++) {
-      const box = new THREE.Mesh(
-        new THREE.BoxGeometry(0.34, 0.44, 0.3),
-        new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(Math.random(), 0.45, 0.42), roughness: 0.65 })
-      );
-      box.position.set(-5.6 + i * 1.35, 2.1 + row * 1.5 + 0.28, -8.6);
-      scene.add(box);
-    }
   }
 
   const popcornMachine = new THREE.Mesh(
