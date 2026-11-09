@@ -8,7 +8,7 @@ import HoverTag from '@/components/cinema/HoverTag';
 import SeatPicker from '@/components/cinema/SeatPicker';
 import TheatreVideoLibrary from '@/components/cinema/TheatreVideoLibrary';
 import { DEFAULT_SEAT } from '@/cinema/seatLayout';
-import { MAX_VIDEO_BYTES, formatVideoSize, listTheatreVideos, uploadTheatreVideo } from '@/cinema/theatreVideos';
+import { MAX_VIDEO_BYTES, addTheatreVideoLink, formatVideoSize, listTheatreVideos, uploadTheatreVideo } from '@/cinema/theatreVideos';
 import CinemaRuntime from '@/cinema/cinemaRuntime';
 import { createCinemaAudio } from '@/cinema/cinemaAudio';
 import { createNarrator } from '@/cinema/cinemaNarration';
@@ -222,10 +222,17 @@ export default function Cinema() {
     });
   }, [flash, refreshVideos]);
 
+  const addVideoLink = useCallback(async (title, url) => {
+    const record = await addTheatreVideoLink(title, url);
+    await refreshVideos();
+    playLibraryVideo(record);
+    flash(`“${record.title}” is now showing in the theatre for everyone.`);
+  }, [flash, playLibraryVideo, refreshVideos]);
+
   const uploadVideo = useCallback(async (file) => {
     if (!file) return;
     if (file.size > MAX_VIDEO_BYTES) {
-      flash(`Too big to upload — the theatre takes films up to 100 MB (yours is ${formatVideoSize(file.size)}). Use Load Video to play it from this computer.`);
+      flash(`Too big to upload — the platform caps uploads at 100 MB (yours is ${formatVideoSize(file.size)}). Host the film once and add it by link in the Video Library, or play it from this computer with Load Video.`);
       return;
     }
     setUploading(true);
@@ -343,6 +350,7 @@ export default function Cinema() {
               uploading={uploading}
               onPlay={playLibraryVideo}
               onUpload={() => uploadInputRef.current?.click()}
+              onAddLink={addVideoLink}
               onClose={() => setLibraryOpen(false)}
             />
           )}

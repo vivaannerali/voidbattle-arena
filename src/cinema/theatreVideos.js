@@ -13,6 +13,16 @@ export async function listTheatreVideos() {
   return page.items;
 }
 
+export async function addTheatreVideoLink(title, url) {
+  const clean = url.trim();
+  if (!/^https:\/\/\S+$/i.test(clean)) throw new Error('Paste a full https:// link to the video file.');
+  const fallback = clean.split('?')[0].split('/').pop() || 'Linked film';
+  return base44.entities.TheatreVideo.create({
+    title: (title.trim() || fallback).slice(0, 80),
+    file_url: clean,
+  });
+}
+
 export async function uploadTheatreVideo(file) {
   const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
   const title = file.name.replace(/\.[^.]+$/, '').slice(0, 80) || 'Untitled presentation';
