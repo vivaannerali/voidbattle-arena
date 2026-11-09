@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CinemaStage from '@/components/cinema/CinemaStage';
 import CinemaHud from '@/components/cinema/CinemaHud';
 import MovieToolbar from '@/components/cinema/MovieToolbar';
@@ -169,6 +170,7 @@ export default function Cinema() {
       <CinemaStage mode={mode} experience={experience} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} />
       <CinemaHud ticket={ticket} held={held} notice={notice} onEat={eatSnack} docked={mode === 'auditorium'} />
       <HoverTag hover={hover} />
+      <Link to="/" className="cinema-game-return">Back to Bed Wars</Link>
 
       {mode === 'auditorium' ? (
         <>

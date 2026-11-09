@@ -19,6 +19,24 @@
   inset: 0;
 }
 
+.cinema-game-return {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  padding: 10px 14px;
+  background: var(--cine-ink);
+  color: var(--cine-gold-soft);
+  border: 1px solid var(--cine-gold);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .cinema-game-return { top: auto; bottom: 4px; font-size: 10px; padding: 4px 10px; }
+}
+
 .cinema-canvas {
   display: block;
   width: 100%;
