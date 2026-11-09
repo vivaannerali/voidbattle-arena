@@ -1,12 +1,13 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
+import Cinema from '@/pages/Cinema';
 import Game from '@/pages/Game';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
@@ -15,9 +16,11 @@ const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
   // This public, account-free game must not wait for an online account check.
-  if (['/', '/about', '/contact'].includes(window.location.pathname.replace(/\/$/, '') || '/')) return (
+  if (['/', '/arena', '/theatre', '/about', '/contact'].includes(window.location.pathname.replace(/\/$/, '') || '/')) return (
     <Routes>
       <Route path="/" element={<Game />} />
+      <Route path="/theatre" element={<Cinema />} />
+      <Route path="/arena" element={<Navigate to="/" replace />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
     </Routes>
@@ -47,6 +50,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Game />} />
+      <Route path="/theatre" element={<Cinema />} />
+      <Route path="/arena" element={<Navigate to="/" replace />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

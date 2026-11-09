@@ -1,0 +1,32 @@
+export default [
+  { id: 'ephiris-origin', marquee: 'EPHIRIS: BEFORE THE CROWN', tagline: 'The origin of the Yellow Emperor.', hero: 'Ephirisi', rival: 'AKD23', score: 'worldcup', accent: '#ffd45f', accent2: '#ffe9aa', shots: [
+    ['forge', "Look, before all the crown stuff, Ephiris was just a builder. That's him by the forge. It's barely going.", 'quiet'],
+    ['arrival', "Past his island? Nothing. Just the void and a few bridges nobody's finished. Not much to work with.", 'quiet'],
+    ['bridge', "He's starting with yellow blocks. One at a time. Yeah, it's slow, but he's getting across.", 'tense'],
+    ['clutch', "Then the raid hits. His bridge breaks, and he's... he's placing blocks while he's falling. That's new.", 'gasp'],
+    ['rescue', "He could chase them. Mind you, his teammate's stuck back there. So he's turning round to get them.", 'cheer'],
+    ['vow', "What's the point of having an empire if your own team can't get home? That's how he sees it.", 'quiet'],
+    ['duel', "It's morning. There's one bed left, and he's the only one there to defend it. Here they come.", 'hype'],
+    ['victory', "He's held them off. Now everyone's saying Ephirisi. The Yellow Emperor. Bet he didn't expect that name to stick.", 'cheer'],
+  ] },
+  { id: 'larp-origin', marquee: 'LARP108: ACROSS THE VOID', tagline: 'Every bridge begins with a risk.', hero: 'Larp108', rival: 'AKD23', score: 'space', accent: '#80adff', accent2: '#73e4e8', shots: [
+    ['arrival', "Larp108's from the outer islands. Their generators aren't giving them much anymore. He's got to try somewhere else.", 'quiet'],
+    ['forge', "There's enough iron for a sword. That's it. He hasn't even got enough wool to build his way back.", 'tense'],
+    ['bridge', "He's going anyway. Look at how fast he's building. I wouldn't want to be looking down right now.", 'tense'],
+    ['clutch', "Ah, he's gone over. No, hang on... one block. He's caught himself. That was close.", 'gasp'],
+    ['rescue', "That's AKD23 on the broken bridge. He's stuck. Larp108's changing direction. He's going to get him.", 'quiet'],
+    ['vow', "Yeah, so... they've agreed on something. If either gets stuck out there, the other's coming back. No arguments.", 'cheer'],
+    ['duel', "Their first defence? Bit of a mess. They're getting pushed back, but neither's leaving the other there.", 'hype'],
+    ['victory', "All that revenge stuff comes later. Right now, Larp108 just wants to get home. Can't blame him.", 'quiet'],
+  ] },
+  { id: 'akd-origin', marquee: 'AKD23: FOR THE TEAM', tagline: 'A guardian is forged, not born.', hero: 'AKD23', rival: 'Larp108', score: 'cyberpunk', accent: '#ef7777', accent2: '#ffd45f', shots: [
+    ['forge', "AKD23 wasn't fighting at first. He'd stay by the forge, fixing whatever swords the others brought back. Usually broken.", 'quiet'],
+    ['bed', "Then raiders get through to red's bed. There's nobody left to stop them. Well... there's him.", 'tense'],
+    ['vow', "That sword isn't even finished. He's picking it up anyway. You can hear him: for the team.", 'quiet'],
+    ['duel', "He's still in that doorway. It's nearly morning now. They haven't got past him. I don't know how he's standing.", 'hype'],
+    ['rescue', "Hang on, that's Larp108 coming back over the bridge. Good. AKD23 won't have to do this on his own.", 'cheer'],
+    ['guardian', "They've built a Dream Defender together. Something to watch the island while they're out. Should buy them a bit of time.", 'gasp'],
+    ['bridge', "Mind you, there's a yellow banner going up across the gap. Looks like they've got a new emperor over there.", 'tense'],
+    ['vow', "AKD23's looking straight at that yellow island. For the team. He's saying it again. Hasn't put the sword down, either.", 'quiet'],
+  ] },
+];
