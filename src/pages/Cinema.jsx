@@ -181,7 +181,7 @@ export default function Cinema() {
 
   return (
     <div className="cinema-root">
-      <CinemaStage mode={mode} experience={experience} seat={seat} preview={pickingSeat} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} />
+      <CinemaStage mode={mode} experience={experience} seat={seat} preview={pickingSeat} runtimeRef={runtimeRef} onPick={handlePick} onHover={setHover} onView={camera => audioRef.current?.followView(camera)} />
       <CinemaHud ticket={ticket} held={held} notice={notice} onEat={eatSnack} docked={mode === 'auditorium'} />
       <HoverTag hover={hover} />
       <Link to="/" className="cinema-game-return">Back to Bed Wars</Link>

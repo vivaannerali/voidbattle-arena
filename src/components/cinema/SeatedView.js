@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import playerSkins from '@/game/playerSkins';
 import seatedCharacter from '@/components/cinema/seatedCharacter';
+import { SCREEN_CENTRE_Y, SCREEN_RADIUS } from '@/cinema/theatreFormat';
 
 export default function SeatedView(scene, camera, position) {
   const skin = playerSkins('CinemaPlayer');
@@ -12,8 +13,8 @@ export default function SeatedView(scene, camera, position) {
   const setSeat = next => {
     body.position.copy(next); body.position.y += .15;
     eye.copy(next).add(new THREE.Vector3(0, 1.48, 0));
-    targetYaw = yaw = Math.atan2(next.x, next.z + 26);
-    targetPitch = pitch = Math.atan2(8.6 - eye.y, Math.hypot(next.x, next.z + 26));
+    targetYaw = yaw = Math.atan2(next.x, next.z + SCREEN_RADIUS);
+    targetPitch = pitch = Math.atan2(SCREEN_CENTRE_Y - eye.y, Math.hypot(next.x, next.z + SCREEN_RADIUS));
     pointer = null;
   };
   setSeat(position);

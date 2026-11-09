@@ -150,6 +150,7 @@ export default class CinemaStage {
     this.current.update(dt, this.preview ? 1.5 : this.elapsed, this.mood);
     this.current.beforeRender?.(this.renderer);
     this.renderer.render(this.current.scene, this.current.camera);
+    this.options.onView?.(this.current.camera);
   }
 
   dispose() {

@@ -1,3 +1,5 @@
+import theatreAmbience from '@/cinema/theatreAmbience';
+
 // Original synthesised cinema audio: Web Audio spatial speaker buses (5.1 where the device
 // supports six channels, stereo downmix otherwise), generative scores, crowd beds and cues.
 const SPEAKERS = [
@@ -52,6 +54,7 @@ export function createCinemaAudio() {
   let excitement = 0.15;
   let buffers = {};
   let alive = true;
+  let room = null;
 
   function noise(seconds = 2) {
     const key = `n${seconds}`;
@@ -214,6 +217,8 @@ export function createCinemaAudio() {
     lowpass.connect(speaker.LFE);
     lfeIn.connect(busFor(0));
 
+    room = theatreAmbience(ctx, master);
+    mix.connect(room.input);
     startCrowd();
     return ctx;
   }
@@ -379,6 +384,7 @@ export function createCinemaAudio() {
       startCrowd();
       return surround ? '5.1' : 'stereo';
     },
+    followView(camera) { room?.follow(camera); },
     format() {
       if (!ctx) return 'pending';
       return surround ? '5.1' : 'stereo';
@@ -386,6 +392,7 @@ export function createCinemaAudio() {
     setMode(next) {
       mode = next;
       if (!ensure()) return;
+      room?.setActive(next === 'auditorium');
       excitement = next === 'auditorium' ? excitement : 0.2;
       applyCrowd();
     },
@@ -433,6 +440,7 @@ export function createCinemaAudio() {
     },
     dispose() {
       alive = false;
+      room?.dispose(); room = null;
       stopMusic();
       if (crowd) {
         try { crowd.src.stop(); } catch (error) { /* already stopped */ }

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SEATS, ROWS, COLUMNS, getSeat, seatLabel } from '@/cinema/seatLayout';
+import { SEATS, ROWS, COLUMNS, DEFAULT_SEAT, getSeat, seatLabel } from '@/cinema/seatLayout';
 import '@/components/cinema/seatPicker.css';
 
 export default function SeatPicker({ selected, experience, onSelect, onStart, onCancel }) {
@@ -24,11 +24,11 @@ export default function SeatPicker({ selected, experience, onSelect, onStart, on
   };
   return <div className="cinema-seat-backdrop"><section className="cinema-seat-picker" role="dialog" aria-modal="true" aria-labelledby="seat-heading" ref={dialog} onKeyDown={keys}>
     <header><p>BED WARS CINEMA · AUDITORIUM 01</p><h2 id="seat-heading">Take your seat.</h2><span>{experience.marquee}</span></header>
-    <div className="cinema-seat-screen">CURVED 70MM SCREEN</div>
+    <div className="cinema-seat-screen">23M TALL · FULL-FRAME 1.43:1 · 70MM SIMULATION</div>
     <div className="cinema-seat-map" aria-label="Choose a row and seat">
-      {Array.from({ length: ROWS }, (_, row) => <div className="cinema-seat-row" key={row}><span aria-hidden="true">{String.fromCharCode(65 + row)}</span>{SEATS.slice(row * COLUMNS, (row + 1) * COLUMNS).map(seat => <button key={seat.id} type="button" data-seat={seat.id} aria-label={seatLabel(seat)} aria-pressed={seat.id === selected} tabIndex={seat.id === selected ? 0 : -1} onKeyDown={event => move(event, seat)} onClick={() => onSelect(seat.id)}>{seat.column + 1}</button>)}</div>)}
+      {Array.from({ length: ROWS }, (_, row) => <div className="cinema-seat-row" key={row}><span aria-hidden="true">{String.fromCharCode(65 + row)}</span>{SEATS.slice(row * COLUMNS, (row + 1) * COLUMNS).map(seat => <button key={seat.id} type="button" data-seat={seat.id} aria-label={`${seatLabel(seat)}${seat.id === DEFAULT_SEAT ? ', recommended sweet spot' : ''}`} title={seat.id === DEFAULT_SEAT ? 'Sweet spot: dead centre, two-thirds back' : seatLabel(seat)} aria-pressed={seat.id === selected} tabIndex={seat.id === selected ? 0 : -1} onKeyDown={event => move(event, seat)} onClick={() => onSelect(seat.id)}>{seat.column + 1}</button>)}</div>)}
     </div>
-    <p className="cinema-seat-help">Click a seat to preview the view. Arrow keys move between seats.<br/>100 fellow moviegoers · All seats available · No charge</p>
+    <p className="cinema-seat-help"><button type="button" onClick={() => onSelect(DEFAULT_SEAT)}>Choose G8 · Recommended sweet spot</button><br/>Dead centre, two-thirds back. Click any seat to preview its sightline.<br/>100 moviegoers · 12 virtual speaker positions · Device-dependent audio</p>
     <footer><strong>{seatLabel(current)}</strong><button type="button" className="cinema-seat-start" onClick={onStart}>Start movie</button><button type="button" onClick={onCancel}>Back to films</button></footer>
   </section></div>;
 }

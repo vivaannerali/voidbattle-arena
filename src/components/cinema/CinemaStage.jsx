@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import Stage from '@/cinema/three/createCinemaStage';
 
-export default function CinemaStage({ mode, experience, seat, preview, runtimeRef, onPick, onHover }) {
+export default function CinemaStage({ mode, experience, seat, preview, runtimeRef, onPick, onHover, onView }) {
   const hostRef = useRef(null);
   const stageRef = useRef(null);
-  const live = useRef({ onPick, onHover, runtimeRef });
-  live.current = { onPick, onHover, runtimeRef };
+  const live = useRef({ onPick, onHover, onView, runtimeRef });
+  live.current = { onPick, onHover, onView, runtimeRef };
 
   useEffect(() => {
     if (!hostRef.current) return undefined;
@@ -13,6 +13,7 @@ export default function CinemaStage({ mode, experience, seat, preview, runtimeRe
       getRuntime: () => live.current.runtimeRef?.current || null,
       onPick: (pick) => live.current.onPick?.(pick),
       onHover: (payload) => live.current.onHover?.(payload),
+      onView: camera => live.current.onView?.(camera),
     });
     stageRef.current = stage;
     return () => {

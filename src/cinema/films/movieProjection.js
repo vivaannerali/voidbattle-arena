@@ -6,17 +6,18 @@ import movieFrame from '@/cinema/films/movieFrame';
 import movieLighting from '@/cinema/films/movieLighting';
 import { EXPERIENCES } from '@/cinema/cinemaContent';
 import { textTexture } from '@/cinema/three/sceneKit';
+import { SCREEN_ASPECT } from '@/cinema/theatreFormat';
 
 export default function movieProjection() {
-  const world = movieWorld(), camera = new THREE.PerspectiveCamera(48, 2.72, .1, 150);
-  const target = new THREE.WebGLRenderTarget(2448, 900, { samples: 4 });
+  const world = movieWorld(), camera = new THREE.PerspectiveCamera(54, SCREEN_ASPECT, .1, 150);
+  const target = new THREE.WebGLRenderTarget(1716, 1200, { samples: 4 });
   target.texture.anisotropy = 8;
   target.texture.repeat.x = -1; target.texture.offset.x = 1;
   const cast = ['Ephirisi', 'Larp108', 'AKD23'].map(movieActor);
   cast.forEach(actor => world.scene.add(actor.root));
   world.scene.add(camera);
   const disposeLighting = movieLighting(world.scene);
-  const caption = new THREE.Mesh(new THREE.PlaneGeometry(9.6, .62), new THREE.MeshBasicMaterial({ transparent: true, depthTest: false }));
+  const caption = new THREE.Mesh(new THREE.PlaneGeometry(5.2, .65), new THREE.MeshBasicMaterial({ transparent: true, depthTest: false }));
   caption.position.set(0, 0, -4); caption.renderOrder = 100; camera.add(caption);
   const frame = movieFrame(camera);
   let film = EXPERIENCES[0], actors = cast, previous = -1;

@@ -5,9 +5,8 @@ import SeatedView from '@/components/cinema/SeatedView';
 import movieProjection from '@/cinema/films/movieProjection';
 import { SEATS, ROWS, RISE, ROW_DEPTH, FRONT_Z, DEFAULT_SEAT, getSeat, audienceSeats } from '@/cinema/seatLayout';
 
-const RADIUS = 26;
-const SCREEN_HEIGHT = 17;
-const THETA = 1.78;
+import { SCREEN_RADIUS as RADIUS, SCREEN_HEIGHT, SCREEN_ARC as THETA, SCREEN_CENTRE_Y } from '@/cinema/theatreFormat';
+import theatreSpeakers from '@/cinema/three/theatreSpeakers';
 const HALL_WIDTH = 46;
 
 export default function createAuditorium({ aspect }) {
@@ -15,7 +14,7 @@ export default function createAuditorium({ aspect }) {
   scene.background = new THREE.Color('#05060a');
   scene.fog = new THREE.Fog('#05060a', 36, 100);
 
-  const camera = new THREE.PerspectiveCamera(70, aspect, 0.05, 240);
+  const camera = new THREE.PerspectiveCamera(50, aspect, 0.05, 240);
 
   const movie = movieProjection();
   const screenMaterial = new THREE.MeshBasicMaterial({ map: movie.texture, side: THREE.DoubleSide });
@@ -23,14 +22,14 @@ export default function createAuditorium({ aspect }) {
     new THREE.CylinderGeometry(RADIUS, RADIUS, SCREEN_HEIGHT, 96, 1, true, Math.PI - THETA / 2, THETA),
     screenMaterial
   );
-  screen.position.y = 8.6;
+  screen.position.y = SCREEN_CENTRE_Y;
   scene.add(screen);
 
   const mask = new THREE.Mesh(
     new THREE.CylinderGeometry(RADIUS + 0.3, RADIUS + 0.3, SCREEN_HEIGHT + 2.6, 64, 1, true, Math.PI - THETA / 2 - 0.06, THETA + 0.12),
     new THREE.MeshBasicMaterial({ color: '#07070a', side: THREE.DoubleSide })
   );
-  mask.position.y = 8.6;
+  mask.position.y = SCREEN_CENTRE_Y;
   scene.add(mask);
 
   const floor = new THREE.Mesh(
@@ -57,9 +56,13 @@ export default function createAuditorium({ aspect }) {
 
   const cushion = new THREE.BoxGeometry(0.58, 0.14, 0.5);
   cushion.translate(0, 0.42, 0);
-  const backrest = new THREE.BoxGeometry(0.6, 0.6, 0.11);
-  backrest.translate(0, 0.72, -0.27);
-  const seatGeometry = mergeGeometries([cushion, backrest]);
+  const backrest = new THREE.BoxGeometry(.68, .72, .18);
+  backrest.rotateX(-.16); backrest.translate(0, .77, -.3);
+  const armrests = [-1, 1].map(side => {
+    const arm = new THREE.BoxGeometry(.12, .12, .68); arm.translate(side * .4, .56, 0); return arm;
+  });
+  const seatGeometry = mergeGeometries([cushion, backrest, ...armrests]);
+  cushion.dispose(); backrest.dispose(); armrests.forEach(arm => arm.dispose());
   const seatMesh = new THREE.InstancedMesh(
     seatGeometry,
     new THREE.MeshStandardMaterial({ color: '#4a1f2c', roughness: 0.9 }),
@@ -88,27 +91,28 @@ export default function createAuditorium({ aspect }) {
   scene.add(crowd.group);
 
   const wallMaterial = new THREE.MeshStandardMaterial({ color: '#0f0d14', roughness: 0.94 });
-  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(1, 21, 42), wallMaterial);
-  leftWall.position.set(-HALL_WIDTH / 2 - 0.5, 10.5, -6);
+  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(1, 28, 42), wallMaterial);
+  leftWall.position.set(-HALL_WIDTH / 2 - 0.5, 14, -6);
   const rightWall = leftWall.clone();
   rightWall.position.x = HALL_WIDTH / 2 + 0.5;
-  const rearWall = new THREE.Mesh(new THREE.BoxGeometry(HALL_WIDTH + 3, 21, 1.2), wallMaterial);
-  rearWall.position.set(0, 10.5, 14.6);
+  const rearWall = new THREE.Mesh(new THREE.BoxGeometry(HALL_WIDTH + 3, 28, 1.2), wallMaterial);
+  rearWall.position.set(0, 14, 14.6);
   const ceiling = new THREE.Mesh(new THREE.BoxGeometry(HALL_WIDTH + 3, 0.6, 42), new THREE.MeshStandardMaterial({ color: '#08080c', roughness: 0.95 }));
-  ceiling.position.set(0, 20.6, -6);
+  ceiling.position.set(0, 27.6, -6);
   scene.add(leftWall, rightWall, rearWall, ceiling);
+  theatreSpeakers(scene);
 
   [-1, 1].forEach((side) => {
     for (let i = 0; i < 7; i++) {
       const panel = new THREE.Mesh(
-        new THREE.BoxGeometry(0.35, 12, 3.4),
+        new THREE.BoxGeometry(0.35, 23, 3.4),
         new THREE.MeshStandardMaterial({ color: i % 2 ? '#151320' : '#191624', roughness: 0.9 })
       );
-      panel.position.set(side * (HALL_WIDTH / 2 - 0.15), 11, -22 + i * 4.4);
+      panel.position.set(side * (HALL_WIDTH / 2 - 0.15), 14, -22 + i * 4.4);
       scene.add(panel);
     }
     const cove = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 34), new THREE.MeshBasicMaterial({ color: '#3c4c6b' }));
-    cove.position.set(side * (HALL_WIDTH / 2 - 1.6), 18.4, -8);
+    cove.position.set(side * (HALL_WIDTH / 2 - 1.6), 26.4, -8);
     scene.add(cove);
   });
 
@@ -116,7 +120,7 @@ export default function createAuditorium({ aspect }) {
   const fibrePositions = new Float32Array(320 * 3);
   for (let i = 0; i < 320; i++) {
     fibrePositions[i * 3] = (Math.random() - 0.5) * (HALL_WIDTH - 6);
-    fibrePositions[i * 3 + 1] = 19.4 + Math.random() * 0.5;
+    fibrePositions[i * 3 + 1] = 26.4 + Math.random() * 0.5;
     fibrePositions[i * 3 + 2] = -24 + Math.random() * 36;
   }
   fibreGeometry.setAttribute('position', new THREE.BufferAttribute(fibrePositions, 3));
@@ -128,8 +132,8 @@ export default function createAuditorium({ aspect }) {
 
   const curtainMaterial = new THREE.MeshStandardMaterial({ color: '#2a0b12', roughness: 0.95 });
   [-1, 1].forEach((side) => {
-    const curtain = new THREE.Mesh(new THREE.BoxGeometry(1.8, 18, 2), curtainMaterial);
-    curtain.position.set(side * 21.6, 9, -22.4);
+    const curtain = new THREE.Mesh(new THREE.BoxGeometry(1.8, 24, 2), curtainMaterial);
+    curtain.position.set(side * 17.4, 12, -21.4);
     scene.add(curtain);
   });
 
@@ -154,7 +158,7 @@ export default function createAuditorium({ aspect }) {
   scene.add(booth, boothWindow);
 
   const beamStart = new THREE.Vector3(0, 14.4, 11.2);
-  const beamEnd = new THREE.Vector3(0, 8.6, -25.7);
+  const beamEnd = new THREE.Vector3(0, SCREEN_CENTRE_Y, -25.7);
   const direction = new THREE.Vector3().subVectors(beamEnd, beamStart);
   const beamLength = direction.length();
   const beam = new THREE.Mesh(
@@ -183,7 +187,7 @@ export default function createAuditorium({ aspect }) {
   const ambient = new THREE.AmbientLight('#1b2438', .65);
   const hemi = new THREE.HemisphereLight('#22304a', '#07070b', .4);
   const screenLight = new THREE.PointLight('#7fe9ff', 120, 90, 2);
-  screenLight.position.set(0, 8.6, -17);
+  screenLight.position.set(0, SCREEN_CENTRE_Y, -17);
   const spillLight = new THREE.PointLight('#7fe9ff', 45, 55, 2);
   spillLight.position.set(0, 5.5, -9);
   const ceilingLight = new THREE.PointLight('#ffcf9a', 40, 46, 2);
@@ -225,7 +229,7 @@ export default function createAuditorium({ aspect }) {
       crowd.update(elapsed, energy, mood?.gasp ?? 0);
       screenLight.intensity = 85 + energy * 110 + Math.sin(elapsed * 2.7) * 8;
       spillLight.intensity = 32 + energy * 45;
-      beam.material.opacity = 0.032 + energy * 0.02 + Math.sin(elapsed * 8.3) * 0.004;
+      beam.material.opacity = .018 + energy * .012 + Math.sin(time * 24 * Math.PI * 2) * .001;
       beamDust.material.opacity = 0.22 + energy * 0.22;
       fibreStars.material.opacity = 0.5 + Math.sin(time * 0.7) * 0.1;
       view.update(dt, time);
