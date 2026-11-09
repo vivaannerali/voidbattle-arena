@@ -196,7 +196,7 @@ export default function Cinema() {
             </>
           ) : (
             <>
-              <p>Five original animated experiences. Click a poster on the wall to begin.</p>
+              <p>Six cinematic Bed Wars stories. Click a poster on the wall to begin.</p>
               <button type="button" onClick={() => go('lobby')}>Back to the Candy Bar</button>
             </>
           )}

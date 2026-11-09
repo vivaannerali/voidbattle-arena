@@ -146,6 +146,7 @@ export default class CinemaStage {
     }
     if (!this.current) return;
     this.current.update(dt, this.elapsed, this.mood);
+    this.current.beforeRender?.(this.renderer);
     this.renderer.render(this.current.scene, this.current.camera);
   }
 

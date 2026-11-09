@@ -99,7 +99,8 @@ export default function buildHub({ aspect }) {
       { x: -9.6, y: 4.4, w: 4.2, h: 6.4 },
       { x: 9.6, y: 4.4, w: 4.2, h: 6.4 },
       { x: 15, y: 4.4, w: 4.2, h: 6.4 },
-      { x: 0, y: 11, w: 2.75, h: 4.13 },
+      { x: -3, y: 11, w: 2.75, h: 4.13 },
+      { x: 3, y: 11, w: 2.75, h: 4.13 },
     ];
     const slot = slots[index];
     const texture = posterTexture(experience, index);

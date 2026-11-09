@@ -392,7 +392,7 @@ export function createCinemaAudio() {
     startExperience(experience) {
       if (!ensure()) return;
       mode = 'auditorium';
-      startMusic(experience.id);
+      startMusic(experience.score || experience.id);
       tone({ at: ctx.currentTime, freq: 180, dur: 1.6, type: 'sine', gain: 0.18, sweep: 60, bass: true, attack: 0.02 });
     },
     stopExperience() {

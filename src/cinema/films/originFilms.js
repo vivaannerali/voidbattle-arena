@@ -1,0 +1,32 @@
+export default [
+  { id: 'ephiris-origin', marquee: 'EPHIRIS: BEFORE THE CROWN', tagline: 'The origin of the Yellow Emperor.', hero: 'Ephirisi', rival: 'AKD23', score: 'worldcup', accent: '#ffd45f', accent2: '#ffe9aa', shots: [
+    ['forge', 'Before the crown, Ephiris was a nameless builder beside a dying forge.', 'quiet'],
+    ['arrival', 'Beyond the home island, the void swallowed every unfinished bridge.', 'quiet'],
+    ['bridge', 'The first crossing was built one yellow block at a time.', 'tense'],
+    ['clutch', 'A raid broke the path. Ephiris learned to build while falling.', 'gasp'],
+    ['rescue', 'Instead of chasing the raiders, the young builder returned for a stranded teammate.', 'cheer'],
+    ['vow', 'An empire would mean nothing if its people could not come home.', 'quiet'],
+    ['duel', 'At dawn, Ephiris defended the last bed alone.', 'hype'],
+    ['victory', 'The islands remembered the name Ephirisi. The Yellow Emperor had risen.', 'cheer'],
+  ] },
+  { id: 'larp-origin', marquee: 'LARP108: ACROSS THE VOID', tagline: 'Every bridge begins with a risk.', hero: 'Larp108', rival: 'AKD23', score: 'space', accent: '#80adff', accent2: '#73e4e8', shots: [
+    ['arrival', 'Larp108 grew up on the outer islands, where the generators had almost run dry.', 'quiet'],
+    ['forge', 'There was enough iron for one sword, and not enough wool for the journey home.', 'tense'],
+    ['bridge', 'Larp108 crossed anyway. Speed became a shield against the empty sky.', 'tense'],
+    ['clutch', 'The first fall should have ended the journey. A single block changed that.', 'gasp'],
+    ['rescue', 'On a broken bridge stood AKD23. Larp108 chose to build toward him.', 'quiet'],
+    ['vow', 'They made a promise: nobody on their team would face the void alone.', 'cheer'],
+    ['duel', 'Their first defence was messy, desperate, and fought shoulder to shoulder.', 'hype'],
+    ['victory', 'Long before revenge, Larp108 fought for a way home.', 'quiet'],
+  ] },
+  { id: 'akd-origin', marquee: 'AKD23: FOR THE TEAM', tagline: 'A guardian is forged, not born.', hero: 'AKD23', rival: 'Larp108', score: 'cyberpunk', accent: '#ef7777', accent2: '#ffd45f', shots: [
+    ['forge', 'AKD23 began at the forge, repairing the blades that other warriors broke.', 'quiet'],
+    ['bed', 'When raiders reached the red bed, there was nobody left to hold the line.', 'tense'],
+    ['vow', 'He picked up an unfinished sword. For the team, he whispered.', 'quiet'],
+    ['duel', 'The first defence lasted until dawn. AKD23 never left the doorway.', 'hype'],
+    ['rescue', 'Larp108 returned across the broken bridge. This time, AKD23 was not alone.', 'cheer'],
+    ['guardian', 'Together they raised a Dream Defender to guard the island while they fought.', 'gasp'],
+    ['bridge', 'Across the divide, a yellow banner rose. A new emperor was coming.', 'tense'],
+    ['vow', 'AKD23 looked toward the yellow island. For the team. Always.', 'quiet'],
+  ] },
+];

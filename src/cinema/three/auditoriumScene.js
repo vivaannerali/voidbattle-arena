@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import createCrowd from '@/cinema/three/crowd';
 import SeatedView from '@/components/cinema/SeatedView';
-import { SCREEN_VERTEX, screenFragment } from '@/cinema/three/screenShaders';
+import movieProjection from '@/cinema/films/movieProjection';
 
 const RADIUS = 26;
 const SCREEN_HEIGHT = 17;
@@ -33,14 +33,8 @@ export default function createAuditorium({ aspect }) {
 
   const camera = new THREE.PerspectiveCamera(74, aspect, 0.05, 240);
 
-  const uniformAspect = (RADIUS * THETA) / SCREEN_HEIGHT;
-  const uniforms = { uTime: { value: 0 }, uEnergy: { value: 0.25 }, uAspect: { value: uniformAspect } };
-  const screenMaterial = new THREE.ShaderMaterial({
-    uniforms,
-    vertexShader: SCREEN_VERTEX,
-    fragmentShader: screenFragment('esports'),
-    side: THREE.DoubleSide,
-  });
+  const movie = movieProjection();
+  const screenMaterial = new THREE.MeshBasicMaterial({ map: movie.texture, side: THREE.DoubleSide, toneMapped: false });
   const screen = new THREE.Mesh(
     new THREE.CylinderGeometry(RADIUS, RADIUS, SCREEN_HEIGHT, 96, 1, true, Math.PI - THETA / 2, THETA),
     screenMaterial
@@ -224,9 +218,9 @@ export default function createAuditorium({ aspect }) {
     pointerDown: view.pointerDown,
     pointerMove: view.pointerMove,
     pointerUp: view.pointerUp,
+    beforeRender: renderer => movie.render(renderer),
     setExperience(experience) {
-      screenMaterial.fragmentShader = screenFragment(experience.id);
-      screenMaterial.needsUpdate = true;
+      movie.setFilm(experience);
       screenLight.color.set(experience.screenLight);
       spillLight.color.set(experience.screenLight);
       ceilingLight.color.set(experience.accent2);
@@ -235,8 +229,7 @@ export default function createAuditorium({ aspect }) {
       time += dt;
       const target = mood?.excitement ?? 0.25;
       energy += (target - energy) * Math.min(1, dt * 1.6);
-      uniforms.uTime.value = elapsed;
-      uniforms.uEnergy.value = energy;
+      movie.update(elapsed);
       crowd.update(elapsed, energy, mood?.gasp ?? 0);
       screenLight.intensity = 85 + energy * 110 + Math.sin(elapsed * 2.7) * 8;
       spillLight.intensity = 32 + energy * 45;
@@ -246,6 +239,7 @@ export default function createAuditorium({ aspect }) {
       view.update(dt, time);
     },
     dispose() {
+      movie.dispose();
       crowd.dispose();
       seatMesh.dispose();
       seatGeometry.dispose();
