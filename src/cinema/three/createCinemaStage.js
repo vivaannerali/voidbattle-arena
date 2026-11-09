@@ -37,6 +37,9 @@ export default class CinemaStage {
     host.addEventListener('pointermove', this.onPointerMove);
     host.addEventListener('pointerdown', this.onPointerDown);
     host.addEventListener('pointerleave', this.onLeave);
+    this.onPointerUp = () => this.current?.pointerUp?.();
+    window.addEventListener('pointerup', this.onPointerUp);
+    window.addEventListener('pointercancel', this.onPointerUp);
     this.observer = new ResizeObserver(this.resize);
     this.observer.observe(host);
     this.resize();
@@ -91,7 +94,7 @@ export default class CinemaStage {
   }
 
   onPointerMove(event) {
-    if (this.mode === 'auditorium') return;
+    if (this.mode === 'auditorium') { this.current?.pointerMove?.(event); return; }
     const now = performance.now();
     if (now - this.lastHoverCheck < 55) return;
     this.lastHoverCheck = now;
@@ -112,6 +115,7 @@ export default class CinemaStage {
 
   onPointerDown(event) {
     if (event.button !== 0) return;
+    if (this.mode === 'auditorium') { this.current?.pointerDown?.(event); return; }
     const object = this.pickAt(event.clientX, event.clientY);
     if (!object) return;
     event.preventDefault();
@@ -119,6 +123,7 @@ export default class CinemaStage {
   }
 
   onLeave() {
+    this.current?.pointerUp?.();
     this.hovered = null;
     this.hoveredChanged = null;
     this.hoverAt = null;
@@ -150,6 +155,8 @@ export default class CinemaStage {
     this.host.removeEventListener('pointermove', this.onPointerMove);
     this.host.removeEventListener('pointerdown', this.onPointerDown);
     this.host.removeEventListener('pointerleave', this.onLeave);
+    window.removeEventListener('pointerup', this.onPointerUp);
+    window.removeEventListener('pointercancel', this.onPointerUp);
     this.observer.disconnect();
     Object.values(this.scenes).forEach((entry) => entry.dispose?.());
     this.scenes = {};

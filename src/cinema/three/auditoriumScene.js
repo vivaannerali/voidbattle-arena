@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import createCrowd from '@/cinema/three/crowd';
+import SeatedView from '@/components/cinema/SeatedView';
 import { SCREEN_VERTEX, screenFragment } from '@/cinema/three/screenShaders';
 
 const RADIUS = 26;
@@ -19,7 +20,7 @@ function buildSeats() {
     const y = 0.15 + row * RISE;
     for (let x = -22; x <= 22.01; x += 0.92) {
       if (Math.abs(Math.abs(x) - 13.5) < 1.05) continue;
-      seats.push({ x, y: y + 0.18, z, rowY: y, yaw: Math.PI + (Math.random() - 0.5) * 0.14 });
+      seats.push({ x, y: y + 0.18, z, rowY: y, yaw: (Math.random() - 0.5) * 0.14 });
     }
   }
   return seats;
@@ -30,9 +31,7 @@ export default function createAuditorium({ aspect }) {
   scene.background = new THREE.Color('#05060a');
   scene.fog = new THREE.Fog('#05060a', 36, 100);
 
-  const camera = new THREE.PerspectiveCamera(66, aspect, 0.1, 240);
-  camera.position.set(0, 9.9, 5.5);
-  camera.lookAt(0, 9, -24);
+  const camera = new THREE.PerspectiveCamera(74, aspect, 0.05, 240);
 
   const uniformAspect = (RADIUS * THETA) / SCREEN_HEIGHT;
   const uniforms = { uTime: { value: 0 }, uEnergy: { value: 0.25 }, uAspect: { value: uniformAspect } };
@@ -104,7 +103,10 @@ export default function createAuditorium({ aspect }) {
   seatMesh.instanceColor.needsUpdate = true;
   scene.add(seatMesh);
 
-  const crowd = createCrowd(seats);
+  const playerSeat = seats.find(seat => seat.z > 2.8 && Math.abs(seat.x) < .4);
+  const view = SeatedView(scene, camera, new THREE.Vector3(playerSeat.x, playerSeat.rowY, playerSeat.z));
+  view.update(1, 0);
+  const crowd = createCrowd(seats.filter(seat => seat !== playerSeat));
   scene.add(crowd.group);
 
   const wallMaterial = new THREE.MeshStandardMaterial({ color: '#0f0d14', roughness: 0.94 });
@@ -219,6 +221,9 @@ export default function createAuditorium({ aspect }) {
     scene,
     camera,
     pickables: [],
+    pointerDown: view.pointerDown,
+    pointerMove: view.pointerMove,
+    pointerUp: view.pointerUp,
     setExperience(experience) {
       screenMaterial.fragmentShader = screenFragment(experience.id);
       screenMaterial.needsUpdate = true;
@@ -238,9 +243,7 @@ export default function createAuditorium({ aspect }) {
       beam.material.opacity = 0.032 + energy * 0.02 + Math.sin(elapsed * 8.3) * 0.004;
       beamDust.material.opacity = 0.22 + energy * 0.22;
       fibreStars.material.opacity = 0.5 + Math.sin(time * 0.7) * 0.1;
-      camera.position.y = 9.9 + Math.sin(time * 0.23) * 0.06;
-      camera.position.x = Math.sin(time * 0.17) * 0.14;
-      camera.lookAt(0, 9, -24);
+      view.update(dt, time);
     },
     dispose() {
       crowd.dispose();
