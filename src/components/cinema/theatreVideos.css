@@ -73,6 +73,141 @@
   cursor: default;
 }
 
+.pixeldrain-panel {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid rgba(217, 176, 113, 0.3);
+  background: rgba(217, 176, 113, 0.06);
+}
+
+.pixeldrain-panel h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  color: var(--cine-gold-soft);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pixeldrain-panel form {
+  display: flex;
+  gap: 6px;
+}
+
+.pixeldrain-panel input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(217, 176, 113, 0.26);
+  color: var(--cine-text);
+  font: inherit;
+  font-size: 10px;
+}
+
+.pixeldrain-panel input:focus {
+  outline: none;
+  border-color: rgba(217, 176, 113, 0.6);
+}
+
+.pixeldrain-panel form button,
+.pixeldrain-files-head button,
+.pixeldrain-files li button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 9px;
+  background: none;
+  border: 1px solid rgba(217, 176, 113, 0.4);
+  color: var(--cine-gold-soft);
+  font: inherit;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pixeldrain-panel form button:hover:enabled,
+.pixeldrain-files-head button:hover:enabled,
+.pixeldrain-files li button:hover:enabled {
+  background: rgba(217, 176, 113, 0.16);
+}
+
+.pixeldrain-panel button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.pixeldrain-hint {
+  margin: 8px 0 0;
+  color: rgba(169, 162, 181, 0.8);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.pixeldrain-hint a {
+  color: var(--cine-gold);
+}
+
+.pixeldrain-files {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  padding-top: 8px;
+}
+
+.pixeldrain-files-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(169, 162, 181, 0.85);
+}
+
+.pixeldrain-files ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theatre-library .pixeldrain-files li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding-bottom: 4px;
+}
+
+.pixeldrain-files li span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pixeldrain-files li small {
+  color: rgba(169, 162, 181, 0.75);
+  font-size: 9px;
+  margin-left: 6px;
+}
+
+.theatre-library .pixeldrain-files li button {
+  flex: 0 0 auto;
+  width: auto;
+  border-bottom: 0;
+  text-align: center;
+}
+
 .theatre-link-form {
   display: flex;
   flex-direction: column;

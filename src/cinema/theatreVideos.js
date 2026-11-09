@@ -33,6 +33,28 @@ export async function addTheatreVideoLink(title, url) {
   });
 }
 
+export function pixeldrainStreamUrl(id) {
+  return `https://pixeldrain.com/api/file/${id}`;
+}
+
+export async function listPixeldrainFiles(apiKey) {
+  try {
+    const response = await base44.functions.invoke('pixeldrainFiles', { apiKey });
+    return response.data?.files || [];
+  } catch (error) {
+    throw new Error(error?.response?.data?.error || 'Could not reach pixeldrain.');
+  }
+}
+
+export async function addPixeldrainFileToTheatre(file) {
+  const title = (file.name || 'Pixeldrain film').replace(/\.[^.]+$/, '').slice(0, 80);
+  return base44.entities.TheatreVideo.create({
+    title,
+    file_url: pixeldrainStreamUrl(file.id),
+    size_mb: Math.round((file.size || 0) / (1024 * 1024)),
+  });
+}
+
 export async function uploadTheatreVideo(file) {
   const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
   const title = file.name.replace(/\.[^.]+$/, '').slice(0, 80) || 'Untitled presentation';

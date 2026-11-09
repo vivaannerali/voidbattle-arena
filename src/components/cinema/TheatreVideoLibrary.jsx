@@ -1,8 +1,9 @@
 import { Loader2, Play, Upload } from 'lucide-react';
 import TheatreLinkForm from '@/components/cinema/TheatreLinkForm';
+import PixeldrainConnect from '@/components/cinema/PixeldrainConnect';
 import '@/components/cinema/theatreVideos.css';
 
-export default function TheatreVideoLibrary({ videos, loading, uploading, onPlay, onUpload, onAddLink, onClose }) {
+export default function TheatreVideoLibrary({ videos, loading, uploading, onPlay, onUpload, onAddLink, onPublished, onClose }) {
   return (
     <aside className="theatre-library" aria-label="Community videos">
       <header>
@@ -10,12 +11,13 @@ export default function TheatreVideoLibrary({ videos, loading, uploading, onPlay
         <button type="button" onClick={onClose}>Close</button>
       </header>
       <p className="theatre-library-note">
-        Everything here is public and permanent. Uploads are capped at 100 MB per film — for a full-length movie,
-        add a direct video link instead (no size limit).
+        Everything here is public and permanent. For a full-length movie, publish it from your pixeldrain account —
+        no size limit.
       </p>
+      <PixeldrainConnect onPublished={onPublished} />
       <button type="button" className="theatre-library-upload" onClick={onUpload} disabled={uploading}>
         {uploading ? <Loader2 size={14} className="theatre-library-spin" /> : <Upload size={14} />}
-        {uploading ? 'Uploading…' : 'Upload Video'}
+        {uploading ? 'Uploading…' : 'Upload Video (100 MB max)'}
       </button>
       <TheatreLinkForm onAdd={onAddLink} />
       {loading ? (

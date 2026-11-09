@@ -166,6 +166,7 @@ export default function Cinema() {
     stopPlayback();
     const previous = videoElRef.current;
     const element = document.createElement('video');
+    if (!local) element.crossOrigin = 'anonymous';
     element.src = src;
     element.loop = true;
     element.playsInline = true;
@@ -351,6 +352,7 @@ export default function Cinema() {
               onPlay={playLibraryVideo}
               onUpload={() => uploadInputRef.current?.click()}
               onAddLink={addVideoLink}
+              onPublished={refreshVideos}
               onClose={() => setLibraryOpen(false)}
             />
           )}
